@@ -71,10 +71,19 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 	defer cancel()
 
 	tmpConfigs := make(map[string]configPriority, len(services))
+	var priority int
 
-	for result := range p.loader.Load(ctx, p.sources.List(), services) {
+	for _, result := range p.loader.Load(ctx, p.sources.List(), services) {
 		log.Debug().Interface("result", result).Send()
-		tmpConfigs[result.]
+		priority = result.Source.GetPriority()
+
+		cfg, ok := tmpConfigs[result.Service]
+		if !ok && priority > cfg.prt {
+			tmpConfigs[result.Service] = configPriority{
+				cfg: result.Config,
+				prt: priority,
+			}
+		}
 	}
 
 	return nil

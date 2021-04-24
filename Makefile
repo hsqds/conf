@@ -5,9 +5,10 @@ gen-mocks:
 	mockgen \
 	-destination=test/mocks/source.go \
 	-package=mocks \
-	-mock_names=Source=MockSource \
+	-mock_names=Source=MockSource,SourcesStorage=MockSourcesStorage,\
+	ConfigsStorage=MockConfigStorage,Loader=MockLoader \
 	github.com/hate-squids/config-provider/provider \
-	Source
+	Source,SourcesStorage,ConfigsStorage,Loader
 
 install-tools:
 	go get github.com/golangci/golangci-lint 

@@ -15,13 +15,16 @@ var _ = Describe("Provider", func() {
 	var (
 		mockController *gomock.Controller
 		srcMock        *mocks.MockSource
+		ssMock         *mocks.MockSourcesStorage
+		csMock         *mocks.MockConfigStorage
+		loaderMock     *mocks.MockLoader
 		prov           *provider.ConfigProvider
 	)
 
 	BeforeEach(func() {
 		mockController = gomock.NewController(GinkgoT())
 		srcMock = mocks.NewMockSource(mockController)
-		prov = provider.NewConfigProvider()
+		prov = provider.NewConfigProvider(ssMock, csMock, loaderMock)
 	})
 
 	AfterEach(func() {
