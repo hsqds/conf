@@ -1,9 +1,13 @@
 lint:
 	golangci-lint run ./...
 
+.PHONY: test
+test:
+	go test -race ./...
+
 gen-mocks:
 	mockgen \
-	-destination=test/mocks/source.go \
+	-destination=test/mocks/provider.go \
 	-package=mocks \
 	-mock_names=Source=MockSource,SourcesStorage=MockSourcesStorage,\
 	ConfigsStorage=MockConfigStorage,Loader=MockLoader \

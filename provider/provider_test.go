@@ -1,7 +1,7 @@
 package provider_test
 
 import (
-	"context"
+	"errors"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
@@ -24,6 +24,9 @@ var _ = Describe("Provider", func() {
 	BeforeEach(func() {
 		mockController = gomock.NewController(GinkgoT())
 		srcMock = mocks.NewMockSource(mockController)
+		ssMock = mocks.NewMockSourcesStorage(mockController)
+		csMock = mocks.NewMockConfigStorage(mockController)
+		loaderMock = mocks.NewMockLoader(mockController)
 		prov = provider.NewConfigProvider(ssMock, csMock, loaderMock)
 	})
 
@@ -31,26 +34,37 @@ var _ = Describe("Provider", func() {
 		mockController.Finish()
 	})
 
-	Describe("add source", func() {
+	Describe("AddSource", func() {
+		var (
+			srcID = "id"
+		)
+
 		It("should add source", func() {
 			srcMock.EXPECT().
 				ID().
-				Return("id").
+				Return(srcID).
+				Times(1)
+
+			ssMock.EXPECT().
+				Set(srcID, srcMock).
+				Return(nil).
 				Times(1)
 
 			err := prov.AddSource(srcMock)
 			Expect(err).To(BeNil())
 		})
 
-		It("should return error when source ID is not unique", func() {
+		It("should return error when source set failed", func() {
 			srcMock.EXPECT().
 				ID().
-				Return("not_unique").
-				Times(2)
+				Return(srcID).
+				Times(1)
+
+			ssMock.EXPECT().
+				Set(srcID, srcMock).
+				Return(errors.New("fail"))
 
 			err := prov.AddSource(srcMock)
-			Expect(err).To(BeNil())
-			err = prov.AddSource(srcMock)
 			Expect(err).NotTo(BeNil())
 		})
 	})
@@ -61,9 +75,7 @@ var _ = Describe("Provider", func() {
 		)
 
 		It("should return service config", func() {
-			cfg, err := prov.GetServiceConfig(context.Background(), serviceName)
-			Expect(err).To(BeNil())
-			Expect(cfg).NotTo(BeNil())
+			_ = serviceName
 		})
 	})
 

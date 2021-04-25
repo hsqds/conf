@@ -29,28 +29,28 @@ type Source interface {
 }
 
 // syncedSources represents sources map protected with mutex
-type syncedSourceStorage struct {
+type SyncedSourcesStorage struct {
 	mtx     sync.RWMutex
 	sources map[string]Source
 }
 
 // newSyncedSources
-func newSyncedSourceStorage() *syncedSourceStorage {
-	return &syncedSourceStorage{
+func NewSyncedSourcesStorage() *SyncedSourcesStorage {
+	return &SyncedSourcesStorage{
 		sources: make(map[string]Source),
 	}
 }
 
 // Set
-func (sm *syncedSourceStorage) Set(key string, src Source) error {
-	sm.mtx.Lock()
-	defer sm.mtx.Unlock()
+func (s *SyncedSourcesStorage) Set(key string, src Source) error {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
 
-	if _, ok := sm.sources[key]; ok {
+	if _, ok := s.sources[key]; ok {
 		return errors.New("source is not unique")
 	}
 
-	sm.sources[key] = src
+	s.sources[key] = src
 
 	return nil
 }

@@ -17,25 +17,25 @@ type ConfigsStorage interface {
 	Update(serviceName string, cfg Config) error
 }
 
-// syncedConfigs represents configs map protected with mutex
-type configsStorage struct {
+// ConfigsStorage represents configs map protected with mutex
+type SyncedConfigsStorage struct {
 	mtx     sync.RWMutex
 	configs map[string]Config
 }
 
-func newSyncedConfigs() *configsStorage {
-	return &configsStorage{
+func NewSyncedConfigs() *SyncedConfigsStorage {
+	return &SyncedConfigsStorage{
 		configs: make(map[string]Config),
 	}
 }
 
 // Update configsCache
-func (c *configsStorage) Update(serviceName string, cfg Config) error {
+func (c *SyncedConfigsStorage) Update(serviceName string, cfg Config) error {
 	return nil
 }
 
 // Get receives configs by service name
-func (c *configsStorage) Get(serviceName string) (Config, error) {
+func (c *SyncedConfigsStorage) Get(serviceName string) (Config, error) {
 	c.mtx.RLock()
 	defer c.mtx.RUnlock()
 
