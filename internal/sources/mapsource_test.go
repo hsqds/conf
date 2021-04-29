@@ -6,16 +6,15 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hate-squids/config-provider/provider"
-	"github.com/hate-squids/config-provider/sources"
+	"github.com/hate-squids/config-provider/internal/provider"
+	"github.com/hate-squids/config-provider/internal/sources"
 )
 
 // testConf represents
 type testConf struct{}
 
-// funcname
-func (t testConf) Get(_ string, _ string) (string, error) {
-	return "", nil
+func (t testConf) Get(_ string, _ string) string {
+	return ""
 }
 
 var _ = Describe("Mapsource", func() {

@@ -10,9 +10,9 @@ gen-mocks:
 	-destination=test/mocks/provider.go \
 	-package=mocks \
 	-mock_names=Source=MockSource,SourcesStorage=MockSourcesStorage,\
-	ConfigsStorage=MockConfigStorage,Loader=MockLoader \
-	github.com/hate-squids/config-provider/provider \
-	Source,SourcesStorage,ConfigsStorage,Loader
+	ConfigsStorage=MockConfigStorage,Loader=MockLoader,Config=MockConfig \
+	github.com/hate-squids/config-provider/internal/provider \
+	Source,SourcesStorage,Config,ConfigsStorage,Loader
 
 install-tools:
 	go get github.com/golangci/golangci-lint 

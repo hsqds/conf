@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/hate-squids/config-provider/provider"
+	"github.com/hate-squids/config-provider/internal/provider"
 )
 
 // MapSource represents

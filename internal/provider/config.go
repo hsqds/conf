@@ -8,13 +8,13 @@ import (
 // Config
 type Config interface {
 	// Get config value by key
-	Get(key string, defaultValue string) (string, error)
+	Get(key string, defaultValue string) string
 }
 
 // ConfigsStorage
 type ConfigsStorage interface {
 	Get(serviceName string) (Config, error)
-	Update(serviceName string, cfg Config) error
+	Set(serviceName string, cfg Config) error
 }
 
 // ConfigsStorage represents configs map protected with mutex
@@ -23,14 +23,19 @@ type SyncedConfigsStorage struct {
 	configs map[string]Config
 }
 
-func NewSyncedConfigs() *SyncedConfigsStorage {
+func NewSyncedConfigsStorage() *SyncedConfigsStorage {
 	return &SyncedConfigsStorage{
 		configs: make(map[string]Config),
 	}
 }
 
-// Update configsCache
-func (c *SyncedConfigsStorage) Update(serviceName string, cfg Config) error {
+// Set
+func (c *SyncedConfigsStorage) Set(serviceName string, cfg Config) error {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+
+	c.configs[serviceName] = cfg
+
 	return nil
 }
 
