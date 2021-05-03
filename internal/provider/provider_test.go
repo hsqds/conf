@@ -51,17 +51,6 @@ var _ = Describe("Provider", func() {
 		})
 	})
 
-	Describe("get service config", func() {
-		var (
-			serviceName = "testsvc"
-		)
-
-		It("should return service config", func() {
-			_ = serviceName
-
-		})
-	})
-
 	Describe("Load,GetServiceConfig", func() {
 		var (
 			services = []string{"testsvc1", "testsvc2", "testsvc3"}

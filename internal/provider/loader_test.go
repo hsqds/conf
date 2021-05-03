@@ -21,9 +21,6 @@ var _ = Describe("Loader", func() {
 		mockSources    []provider.Source
 
 		src *mocks.MockSource
-		// p2Src *mocks.MockSource
-		// p3Src *mocks.MockSource
-		// p4Src *mocks.MockSource
 
 		svc1, svc2, svc3 = "service1", "service2", "service3"
 	)
@@ -33,9 +30,6 @@ var _ = Describe("Loader", func() {
 		mockController = gomock.NewController(GinkgoT())
 
 		src = mocks.NewMockSource(mockController)
-		// p2Src = mocks.NewMockSource(mockController)
-		// p3Src = mocks.NewMockSource(mockController)
-		// p4Src = mocks.NewMockSource(mockController)
 	})
 
 	AfterEach(func() {
