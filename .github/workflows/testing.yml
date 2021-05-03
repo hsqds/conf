@@ -1,0 +1,23 @@
+name: Testing
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  golangci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [1.13, 1.14, 1.15, 1.16]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Test
+        run: go test -v ./...

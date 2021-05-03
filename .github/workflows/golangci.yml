@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, feature/**]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  golangci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v2.5.2
