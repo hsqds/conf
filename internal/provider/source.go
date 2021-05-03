@@ -78,7 +78,7 @@ func (s *SyncedSourcesStorage) Get(sourceID string) (Source, error) {
 
 	src, ok := s.sources[sourceID]
 	if !ok {
-		return nil, fmt.Errorf("SyncedSourceStorage: no source with id %q", sourceID)
+		return nil, fmt.Errorf("syncedSourceStorage: no source with id %q", sourceID)
 	}
 
 	return src, nil

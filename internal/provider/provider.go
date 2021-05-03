@@ -7,9 +7,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// ProviderOption represents provision options
+// Option represents provision options
 // options may affect subscription and config loading processes
-type ProviderOption struct {
+type Option struct {
 	Name  string
 	Value string
 }
@@ -41,14 +41,13 @@ func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStor
 }
 
 // GetServiceConfig provide service config from cache
-func (p *ConfigProvider) GetServiceConfig(ctx context.Context, serviceName string, opts ...*ProviderOption) (Config, error) {
-
+func (p *ConfigProvider) GetServiceConfig(ctx context.Context, serviceName string, opts ...*Option) (Config, error) {
 	return nil, nil
 }
 
 // SubscribeForServiceConfig creates a subscription for service
 // config updates. Returns channel of Configs
-func (p *ConfigProvider) SubscribeForServiceConfig(ctx context.Context, serviceName string, opts ...*ProviderOption) (chan Config, error) {
+func (p *ConfigProvider) SubscribeForServiceConfig(ctx context.Context, serviceName string, opts ...*Option) (chan Config, error) {
 	return nil, nil
 }
 

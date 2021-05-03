@@ -20,6 +20,6 @@ func NewTestConfig() TestConfig {
 }
 
 // Get
-func (c *TestConfig) Get(key string, defaultValue string) string {
+func (c *TestConfig) Get(key, defaultValue string) string {
 	return c.value
 }

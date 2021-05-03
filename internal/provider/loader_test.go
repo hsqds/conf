@@ -93,7 +93,7 @@ var _ = Describe("Loader", func() {
 			services := []string{svc1, svc3}
 			configsCount := len(services)
 
-			src.EXPECT().ID().Return(srcID).Times(1)
+			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
 			src.EXPECT().GetServiceConfig(gomock.Any()).Return(nil, err).Times(configsCount)
 			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)

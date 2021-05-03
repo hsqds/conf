@@ -48,7 +48,7 @@ func (s *MapSource) GetPriority() int {
 func (s *MapSource) GetServiceConfig(serviceName string) (provider.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
-		return nil, fmt.Errorf("MapSource: could not get config for %s service", serviceName)
+		return nil, fmt.Errorf("could not get config for %s service", serviceName)
 	}
 
 	return cfg, nil
