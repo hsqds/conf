@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/hate-squids/config-provider/internal/provider"
+	"github.com/hsqds/conf/internal/provider"
 )
 
 const maxPriority = 20

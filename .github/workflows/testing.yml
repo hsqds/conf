@@ -5,7 +5,8 @@ on:
     branches: [main, develop]
 
 jobs:
-  golangci:
+  test:
+    needs: golangci
     runs-on: ubuntu-latest
     strategy:
       matrix:

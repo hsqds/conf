@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hate-squids/config-provider/internal/provider"
-	"github.com/hate-squids/config-provider/internal/sources"
+	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf/internal/sources"
 )
 
 // testConf represents

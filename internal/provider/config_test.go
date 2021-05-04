@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hate-squids/config-provider/internal/provider"
-	"github.com/hate-squids/config-provider/test/mocks"
+	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf/test/mocks"
 )
 
 var _ = Describe("ConfigStorage", func() {

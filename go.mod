@@ -1,4 +1,4 @@
-module github.com/hate-squids/config-provider
+module github.com/hsqds/conf
 
 go 1.16
 
