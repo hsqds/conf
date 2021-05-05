@@ -7,11 +7,11 @@ test:
 
 gen-mocks:
 	mockgen \
-	-destination=test/mocks/provider.go \
+	-destination=test/mocks/conf.go \
 	-package=mocks \
 	-mock_names=Source=MockSource,SourcesStorage=MockSourcesStorage,\
 	ConfigsStorage=MockConfigStorage,Loader=MockLoader,Config=MockConfig \
-	github.com/hsqds/conf/internal/provider \
+	github.com/hsqds/conf \
 	Source,SourcesStorage,Config,ConfigsStorage,Loader
 
 install-tools:

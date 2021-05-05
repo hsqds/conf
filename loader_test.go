@@ -1,4 +1,4 @@
-package provider_test
+package conf_test
 
 import (
 	"context"
@@ -9,16 +9,16 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
 	"github.com/hsqds/conf/test/stubs"
 )
 
 var _ = Describe("Loader", func() {
 	var (
-		loader         *provider.ConfigsLoader
+		loader         *conf.ConfigsLoader
 		mockController *gomock.Controller
-		mockSources    []provider.Source
+		mockSources    []conf.Source
 
 		src *mocks.MockSource
 
@@ -26,7 +26,7 @@ var _ = Describe("Loader", func() {
 	)
 
 	BeforeEach(func() {
-		loader = &provider.ConfigsLoader{}
+		loader = &conf.ConfigsLoader{}
 		mockController = gomock.NewController(GinkgoT())
 
 		src = mocks.NewMockSource(mockController)
@@ -45,16 +45,16 @@ var _ = Describe("Loader", func() {
 
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
-			src.EXPECT().GetServiceConfig(gomock.Any()).Return(provider.Config(&cfg), nil).Times(len(services))
+			src.EXPECT().GetServiceConfig(gomock.Any()).Return(conf.Config(&cfg), nil).Times(len(services))
 			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
 
-			mockSources = []provider.Source{
-				provider.Source(src),
+			mockSources = []conf.Source{
+				conf.Source(src),
 			}
 
 			res := loader.Load(context.Background(), mockSources, services)
 			Expect(len(res)).Should(Equal(configsCount))
-			Expect(res).Should(Equal([]provider.LoadResult{
+			Expect(res).Should(Equal([]conf.LoadResult{
 				{SourceID: srcID, Config: &cfg, Err: nil, Service: svc1},
 				{SourceID: srcID, Config: &cfg, Err: nil, Service: svc2},
 				{SourceID: srcID, Config: &cfg, Err: nil, Service: svc3},
@@ -70,13 +70,13 @@ var _ = Describe("Loader", func() {
 			src.EXPECT().Load(gomock.Any(), services).Return(err).Times(1)
 			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
 
-			mockSources = []provider.Source{
-				provider.Source(src),
+			mockSources = []conf.Source{
+				conf.Source(src),
 			}
 			res := loader.Load(context.Background(), mockSources, services)
 
 			Expect(len(res)).Should(Equal(1))
-			Expect(res).Should(Equal([]provider.LoadResult{
+			Expect(res).Should(Equal([]conf.LoadResult{
 				{SourceID: srcID, Config: nil, Err: err, Service: ""},
 			}))
 		})
@@ -92,14 +92,14 @@ var _ = Describe("Loader", func() {
 			src.EXPECT().GetServiceConfig(gomock.Any()).Return(nil, err).Times(configsCount)
 			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
 
-			mockSources = []provider.Source{
-				provider.Source(src),
+			mockSources = []conf.Source{
+				conf.Source(src),
 			}
 
 			res := loader.Load(context.Background(), mockSources, services)
 
 			Expect(len(res)).Should(Equal(configsCount))
-			Expect(res).Should(Equal([]provider.LoadResult{
+			Expect(res).Should(Equal([]conf.LoadResult{
 				{SourceID: srcID, Config: nil, Err: err, Service: svc1},
 				{SourceID: srcID, Config: nil, Err: err, Service: svc3},
 			}))

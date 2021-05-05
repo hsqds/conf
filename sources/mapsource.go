@@ -5,18 +5,18 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf"
 )
 
 // MapSource represents
 type MapSource struct {
 	id       string
-	data     map[string]provider.Config
+	data     map[string]conf.Config
 	priority int
 }
 
 // NewMapSource
-func NewMapSource(priority int, data map[string]provider.Config) *MapSource {
+func NewMapSource(priority int, data map[string]conf.Config) *MapSource {
 	return &MapSource{
 		id:       uuid.NewString(),
 		data:     data,
@@ -45,7 +45,7 @@ func (s *MapSource) GetPriority() int {
 }
 
 // GetServiceConfig
-func (s *MapSource) GetServiceConfig(serviceName string) (provider.Config, error) {
+func (s *MapSource) GetServiceConfig(serviceName string) (conf.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
 		return nil, fmt.Errorf("could not get config for %s service", serviceName)

@@ -1,4 +1,4 @@
-package provider_test
+package conf_test
 
 import (
 	"testing"

@@ -1,4 +1,4 @@
-package provider_test
+package conf_test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
 )
 
@@ -19,7 +19,7 @@ var _ = Describe("Provider", func() {
 		ssMock         *mocks.MockSourcesStorage
 		csMock         *mocks.MockConfigStorage
 		loaderMock     *mocks.MockLoader
-		prov           *provider.ConfigProvider
+		prov           *conf.ConfigProvider
 	)
 
 	BeforeEach(func() {
@@ -28,7 +28,7 @@ var _ = Describe("Provider", func() {
 		ssMock = mocks.NewMockSourcesStorage(mockController)
 		csMock = mocks.NewMockConfigStorage(mockController)
 		loaderMock = mocks.NewMockLoader(mockController)
-		prov = provider.NewConfigProvider(ssMock, csMock, loaderMock)
+		prov = conf.NewConfigProvider(ssMock, csMock, loaderMock)
 	})
 
 	AfterEach(func() {
@@ -54,7 +54,7 @@ var _ = Describe("Provider", func() {
 	Describe("Load,GetServiceConfig", func() {
 		var (
 			services = []string{"testsvc1", "testsvc2", "testsvc3"}
-			sources  = []provider.Source{
+			sources  = []conf.Source{
 				srcMock,
 			}
 		)

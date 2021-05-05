@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hsqds/conf/internal/provider"
-	"github.com/hsqds/conf/internal/sources"
+	"github.com/hsqds/conf"
+	"github.com/hsqds/conf/sources"
 )
 
 // testConf represents
@@ -21,7 +21,7 @@ var _ = Describe("Mapsource", func() {
 	var (
 		priority    = 4
 		serviceName = "service1"
-		cfgData     = map[string]provider.Config{
+		cfgData     = map[string]conf.Config{
 			serviceName: testConf{},
 		}
 		src = sources.NewMapSource(priority, cfgData)

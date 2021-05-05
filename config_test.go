@@ -1,11 +1,11 @@
-package provider_test
+package conf_test
 
 import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
 )
 
@@ -13,13 +13,13 @@ var _ = Describe("ConfigStorage", func() {
 	var (
 		mockController *gomock.Controller
 		configMock     *mocks.MockConfig
-		confStorage    provider.ConfigsStorage
+		confStorage    conf.ConfigsStorage
 	)
 
 	BeforeEach(func() {
 		mockController = gomock.NewController(GinkgoT())
 		configMock = mocks.NewMockConfig(mockController)
-		confStorage = provider.NewSyncedConfigsStorage()
+		confStorage = conf.NewSyncedConfigsStorage()
 	})
 
 	AfterEach(func() {

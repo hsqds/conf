@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/hsqds/conf/internal/provider"
+	"github.com/hsqds/conf"
 )
 
 const maxPriority = 20
@@ -46,7 +46,7 @@ func (s *TestSource) GetPriority() int {
 }
 
 // GetServiceConfig
-func (s *TestSource) GetServiceConfig(serviceName string) (provider.Config, error) {
+func (s *TestSource) GetServiceConfig(serviceName string) (conf.Config, error) {
 	return nil, nil
 }
 
