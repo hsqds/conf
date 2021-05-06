@@ -50,7 +50,7 @@ var _ = Describe("Mapsource", func() {
 	})
 
 	It("should load without errors", func() {
-		err := src.Load(context.Background())
+		err := src.Load(context.Background(), []string{})
 		Expect(err).To(BeNil())
 	})
 

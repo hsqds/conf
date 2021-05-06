@@ -8,7 +8,7 @@ import (
 // Config
 type Config interface {
 	// Get config value by key
-	Get(key string, defaultValue string) string
+	Get(key, defaultValue string) string
 }
 
 // ConfigsStorage
@@ -19,7 +19,7 @@ type ConfigsStorage interface {
 
 // ConfigsStorage represents configs map protected with mutex
 type SyncedConfigsStorage struct {
-	mtx     sync.RWMutex
+	mtx     sync.Mutex
 	configs map[string]Config
 }
 
@@ -41,8 +41,8 @@ func (c *SyncedConfigsStorage) Set(serviceName string, cfg Config) error {
 
 // Get receives configs by service name
 func (c *SyncedConfigsStorage) Get(serviceName string) (Config, error) {
-	c.mtx.RLock()
-	defer c.mtx.RUnlock()
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
 
 	cfg, ok := c.configs[serviceName]
 	if !ok {

@@ -41,8 +41,8 @@ func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStor
 }
 
 // GetServiceConfig provide service config from cache
-func (p *ConfigProvider) GetServiceConfig(ctx context.Context, serviceName string, opts ...*Option) (Config, error) {
-	return nil, nil
+func (p *ConfigProvider) GetServiceConfig(serviceName string, opts ...*Option) (Config, error) {
+	return p.configs.Get(serviceName)
 }
 
 // SubscribeForServiceConfig creates a subscription for service
@@ -71,21 +71,30 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 	var priority int
 
 	for _, result := range p.loader.Load(ctx, p.sources.List(), services) {
-		log.Debug().Interface("result", result).Send()
+		log.Debug().Interface("result", result)
 
 		src, err := p.sources.Get(result.SourceID)
 		if err != nil {
 			err = fmt.Errorf("could not get source by id (%q): %w", result.SourceID, err)
 			log.Error().Err(err).Send()
 		}
+
 		priority = src.GetPriority()
 
-		cfg, ok := tmpConfigs[result.Service]
-		if !ok && priority > cfg.prt {
+		cfgP, ok := tmpConfigs[result.Service]
+		if !ok || priority > cfgP.prt {
 			tmpConfigs[result.Service] = configPriority{
 				cfg: result.Config,
 				prt: priority,
 			}
+		}
+	}
+
+	for svcName, cfgP := range tmpConfigs {
+		log.Debug().Str("service name", svcName).Interface("config", cfgP.cfg).Msg("updating config cache")
+		err := p.configs.Set(svcName, cfgP.cfg)
+		if err != nil {
+			return fmt.Errorf("could not update configs storage: %w", err)
 		}
 	}
 

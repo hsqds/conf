@@ -35,7 +35,7 @@ func (s *MapSource) Ping(ctx context.Context) error {
 }
 
 // Load
-func (s *MapSource) Load(ctx context.Context, services ...string) error {
+func (s *MapSource) Load(ctx context.Context, services []string) error {
 	return nil
 }
 

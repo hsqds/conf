@@ -32,7 +32,7 @@ type Source interface {
 
 // syncedSources represents sources map protected with mutex
 type SyncedSourcesStorage struct {
-	mtx     sync.RWMutex
+	mtx     sync.Mutex
 	sources map[string]Source
 }
 
@@ -60,8 +60,8 @@ func (s *SyncedSourcesStorage) Append(src Source) error {
 
 // List returns sources as a slice
 func (s *SyncedSourcesStorage) List() []Source {
-	s.mtx.RLock()
-	defer s.mtx.RUnlock()
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
 
 	lst := make([]Source, 0, len(s.sources))
 	for _, src := range s.sources {
@@ -73,8 +73,8 @@ func (s *SyncedSourcesStorage) List() []Source {
 
 // Get
 func (s *SyncedSourcesStorage) Get(sourceID string) (Source, error) {
-	s.mtx.RLock()
-	defer s.mtx.RUnlock()
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
 
 	src, ok := s.sources[sourceID]
 	if !ok {
