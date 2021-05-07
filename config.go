@@ -2,13 +2,54 @@ package conf
 
 import (
 	"fmt"
+	"strings"
 	"sync"
+	"text/template"
 )
+
+type Getter interface {
+	// Get config value by key
+	Get(key, defaultValue string) string
+}
+
+type Formatter interface {
+	// Fmt renders `pattern` filling it with config values
+	Fmt(pattern string) (string, error)
+}
 
 // Config
 type Config interface {
-	// Get config value by key
-	Get(key, defaultValue string) string
+	Getter
+	Formatter
+}
+
+// MapConfig represents map based config
+type MapConfig map[string]string
+
+// Get returns value by key or defaultValue
+func (m MapConfig) Get(key, defaultValue string) string {
+	val, ok := m[key]
+	if !ok {
+		return defaultValue
+	}
+
+	return val
+}
+
+// Fmt renders `pattern` filling it with config values
+func (m MapConfig) Fmt(pattern string) (string, error) {
+	p, err := template.New("pattern").Parse(pattern)
+	if err != nil {
+		return "", fmt.Errorf("could not parse pattern: %w", err)
+	}
+
+	b := &strings.Builder{}
+	err = p.Execute(b, m)
+	if err != nil {
+		return "", fmt.Errorf("could not render template: %w", err)
+	}
+
+	return b.String(), nil
 }
 
 // ConfigsStorage

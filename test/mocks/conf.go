@@ -106,20 +106,6 @@ func (mr *MockSourceMockRecorder) Load(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Load", reflect.TypeOf((*MockSource)(nil).Load), arg0, arg1)
 }
 
-// Ping mocks base method.
-func (m *MockSource) Ping(arg0 context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Ping", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Ping indicates an expected call of Ping.
-func (mr *MockSourceMockRecorder) Ping(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockSource)(nil).Ping), arg0)
-}
-
 // MockSourcesStorage is a mock of SourcesStorage interface.
 type MockSourcesStorage struct {
 	ctrl     *gomock.Controller
@@ -207,6 +193,21 @@ func NewMockConfig(ctrl *gomock.Controller) *MockConfig {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockConfig) EXPECT() *MockConfigMockRecorder {
 	return m.recorder
+}
+
+// Fmt mocks base method.
+func (m *MockConfig) Fmt(arg0 string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Fmt", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Fmt indicates an expected call of Fmt.
+func (mr *MockConfigMockRecorder) Fmt(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Fmt", reflect.TypeOf((*MockConfig)(nil).Fmt), arg0)
 }
 
 // Get mocks base method.

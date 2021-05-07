@@ -17,6 +17,11 @@ func (t testConf) Get(_, _ string) string {
 	return ""
 }
 
+// Fmt
+func (t testConf) Fmt(_ string) (string, error) {
+	return "", nil
+}
+
 var _ = Describe("Mapsource", func() {
 	var (
 		priority    = 4
@@ -42,11 +47,6 @@ var _ = Describe("Mapsource", func() {
 				ids[id] = struct{}{}
 			})
 		}
-	})
-
-	It("should ping without errors", func() {
-		err := src.Ping(context.Background())
-		Expect(err).To(BeNil())
 	})
 
 	It("should load without errors", func() {

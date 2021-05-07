@@ -23,3 +23,8 @@ func NewTestConfig() TestConfig {
 func (c *TestConfig) Get(key, defaultValue string) string {
 	return c.value
 }
+
+// Fmt
+func (c *TestConfig) Fmt(pattern string) (string, error) {
+	return "", nil
+}

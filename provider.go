@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
 )
 
 // Option represents provision options
@@ -19,24 +19,27 @@ type ConfigProvider struct {
 	sources SourcesStorage
 	configs ConfigsStorage
 	loader  Loader
+	logger  zerolog.Logger
 }
 
 // NewDefaultConfigProvider
-func NewDefaultConfigProvider() *ConfigProvider {
+func NewDefaultConfigProvider(logger *zerolog.Logger) *ConfigProvider {
 	return NewConfigProvider(
 		NewSyncedSourcesStorage(),
 		NewSyncedConfigsStorage(),
-		&ConfigsLoader{},
+		NewConfigsLoader(logger),
+		logger,
 	)
 }
 
 // NewConfigProvider
 func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStorage,
-	loader Loader) *ConfigProvider {
+	loader Loader, logger *zerolog.Logger) *ConfigProvider {
 	return &ConfigProvider{
 		sources: sourcesStorage,
 		configs: configsStorage,
 		loader:  loader,
+		logger:  *logger,
 	}
 }
 
@@ -71,12 +74,12 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 	var priority int
 
 	for _, result := range p.loader.Load(ctx, p.sources.List(), services) {
-		log.Debug().Interface("result", result)
+		p.logger.Debug().Interface("result", result)
 
 		src, err := p.sources.Get(result.SourceID)
 		if err != nil {
 			err = fmt.Errorf("could not get source by id (%q): %w", result.SourceID, err)
-			log.Error().Err(err).Send()
+			p.logger.Error().Err(err).Send()
 		}
 
 		priority = src.GetPriority()
@@ -91,7 +94,7 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 	}
 
 	for svcName, cfgP := range tmpConfigs {
-		log.Debug().Str("service name", svcName).Interface("config", cfgP.cfg).Msg("updating config cache")
+		p.logger.Debug().Str("service name", svcName).Interface("config", cfgP.cfg).Msg("updating config cache")
 		err := p.configs.Set(svcName, cfgP.cfg)
 		if err != nil {
 			return fmt.Errorf("could not update configs storage: %w", err)
@@ -99,4 +102,11 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 	}
 
 	return nil
+}
+
+// Close
+func (p *ConfigProvider) Close(ctx context.Context) {
+	for _, src := range p.sources.List() {
+		src.Close(ctx)
+	}
 }

@@ -29,11 +29,6 @@ func (s *MapSource) ID() string {
 	return s.id
 }
 
-// Ping checking availability of data
-func (s *MapSource) Ping(ctx context.Context) error {
-	return nil
-}
-
 // Load
 func (s *MapSource) Load(ctx context.Context, services []string) error {
 	return nil

@@ -18,8 +18,6 @@ type SourcesStorage interface {
 type Source interface {
 	// Shoud return unique source identifier persistent for in all source lifetime
 	ID() string
-	// Ping let insure source is available
-	Ping(context.Context) error
 	// Load pull config for the list of service
 	Load(ctx context.Context, serviceNames []string) error
 	// GetPriority returns source priority

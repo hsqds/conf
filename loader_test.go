@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/rs/zerolog/log"
 
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
@@ -26,7 +27,7 @@ var _ = Describe("Loader", func() {
 	)
 
 	BeforeEach(func() {
-		loader = &conf.ConfigsLoader{}
+		loader = conf.NewConfigsLoader(&log.Logger)
 		mockController = gomock.NewController(GinkgoT())
 
 		src = mocks.NewMockSource(mockController)

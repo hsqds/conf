@@ -3,10 +3,12 @@ package conf_test
 import (
 	"context"
 	"errors"
+	"os"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/rs/zerolog"
 
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
@@ -20,6 +22,8 @@ var _ = Describe("Provider", func() {
 		csMock         *mocks.MockConfigStorage
 		loaderMock     *mocks.MockLoader
 		prov           *conf.ConfigProvider
+
+		logger = zerolog.New(os.Stderr)
 	)
 
 	BeforeEach(func() {
@@ -28,7 +32,7 @@ var _ = Describe("Provider", func() {
 		ssMock = mocks.NewMockSourcesStorage(mockController)
 		csMock = mocks.NewMockConfigStorage(mockController)
 		loaderMock = mocks.NewMockLoader(mockController)
-		prov = conf.NewConfigProvider(ssMock, csMock, loaderMock)
+		prov = conf.NewConfigProvider(ssMock, csMock, loaderMock, &logger)
 	})
 
 	AfterEach(func() {
