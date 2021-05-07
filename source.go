@@ -20,10 +20,10 @@ type Source interface {
 	ID() string
 	// Load pull config for the list of service
 	Load(ctx context.Context, serviceNames []string) error
-	// GetPriority returns source priority
-	GetPriority() int
-	// GetServiceConfig
-	GetServiceConfig(serviceName string) (Config, error)
+	// Priority returns source priority
+	Priority() int
+	// ServiceConfig
+	ServiceConfig(serviceName string) (Config, error)
 	// Close closes connections
 	Close(context.Context) error
 }

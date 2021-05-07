@@ -41,12 +41,12 @@ func (s *TestSource) Load(ctx context.Context, serviceNames []string) error {
 }
 
 // funcname
-func (s *TestSource) GetPriority() int {
+func (s *TestSource) Priority() int {
 	return s.p
 }
 
-// GetServiceConfig
-func (s *TestSource) GetServiceConfig(serviceName string) (conf.Config, error) {
+// ServiceConfig
+func (s *TestSource) ServiceConfig(serviceName string) (conf.Config, error) {
 	return nil, nil
 }
 

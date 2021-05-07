@@ -12,11 +12,6 @@ import (
 	"github.com/hsqds/conf"
 )
 
-const (
-	delimiter  = "-"
-	assignment = "="
-)
-
 // FlagsSource represents
 type FlagsSource struct {
 	id       string
@@ -50,13 +45,13 @@ func (s *FlagsSource) ID() string {
 	return s.id
 }
 
-// GetPriority
-func (s *FlagsSource) GetPriority() int {
+// Priority
+func (s *FlagsSource) Priority() int {
 	return s.priority
 }
 
-// GetServiceConfig
-func (s *FlagsSource) GetServiceConfig(serviceName string) (conf.Config, error) {
+// ServiceConfig
+func (s *FlagsSource) ServiceConfig(serviceName string) (conf.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
 		return nil, fmt.Errorf("could not get config for %q service", serviceName)
@@ -75,7 +70,11 @@ func (s *FlagsSource) parse(services, args []string) map[string]conf.Config {
 	s.logger.Debug().Interface("services", services).Interface("args", args).Send()
 	configs := make(map[string]conf.Config)
 
-	const splittedCount = 2
+	const (
+		delimiter     = "-"
+		assignment    = "="
+		splittedCount = 2
+	)
 
 	var svcPrefix string
 	for _, svc := range services {

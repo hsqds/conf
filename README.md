@@ -16,7 +16,6 @@ each source may provide configs for many services
  * environment variables
  * command line flags
  * json files
- * yaml files
 
 #### json files
 
@@ -68,10 +67,10 @@ then load data from sources and get needed service config
 	err := cp.Load(context.Background(), "http", "grpc")
     processErr(err)
     // `config.json` data will override `dafaults.json` respecting the priority
-	httpConfig, err := cp.GetServiceConfig("http")
+	httpConfig, err := cp.ServiceConfig("http")
     processErr(err)
     // grpc config will be loaded from `defaults.json`
-    grpcConfig, err := cp.GetServiceConfig("grpc")
+    grpcConfig, err := cp.ServiceConfig("grpc")
     processErr(err)
 ```
 
@@ -90,5 +89,5 @@ or format config parameters calling `Fmt` method
 
 ## ROADMAD:
 * now - remove zerolog from dependencies
-* v0.1 - jsonfile source, yaml source, env source, flags source
+* v0.1 - jsonfile source, env source, flags source
 * v0.2 - ability to subscribe for source updates

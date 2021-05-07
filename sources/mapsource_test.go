@@ -55,7 +55,7 @@ var _ = Describe("Mapsource", func() {
 	})
 
 	It("should return priority", func() {
-		p := src.GetPriority()
+		p := src.Priority()
 		Expect(p).Should(Equal(priority))
 	})
 
@@ -66,13 +66,13 @@ var _ = Describe("Mapsource", func() {
 
 	Describe("getting service config", func() {
 		It("should return service config", func() {
-			cfg, err := src.GetServiceConfig(serviceName)
+			cfg, err := src.ServiceConfig(serviceName)
 			Expect(err).To(BeNil())
 			Expect(cfg).NotTo(BeNil())
 		})
 
 		It("should return service config", func() {
-			_, err := src.GetServiceConfig("inexisting")
+			_, err := src.ServiceConfig("inexisting")
 			Expect(err).NotTo(BeNil())
 		})
 	})

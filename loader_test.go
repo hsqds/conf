@@ -46,7 +46,7 @@ var _ = Describe("Loader", func() {
 
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
-			src.EXPECT().GetServiceConfig(gomock.Any()).Return(conf.Config(&cfg), nil).Times(len(services))
+			src.EXPECT().ServiceConfig(gomock.Any()).Return(conf.Config(&cfg), nil).Times(len(services))
 			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
 
 			mockSources = []conf.Source{
@@ -90,7 +90,7 @@ var _ = Describe("Loader", func() {
 
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
-			src.EXPECT().GetServiceConfig(gomock.Any()).Return(nil, err).Times(configsCount)
+			src.EXPECT().ServiceConfig(gomock.Any()).Return(nil, err).Times(configsCount)
 			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
 
 			mockSources = []conf.Source{

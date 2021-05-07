@@ -49,35 +49,6 @@ func (mr *MockSourceMockRecorder) Close(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockSource)(nil).Close), arg0)
 }
 
-// GetPriority mocks base method.
-func (m *MockSource) GetPriority() int {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPriority")
-	ret0, _ := ret[0].(int)
-	return ret0
-}
-
-// GetPriority indicates an expected call of GetPriority.
-func (mr *MockSourceMockRecorder) GetPriority() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPriority", reflect.TypeOf((*MockSource)(nil).GetPriority))
-}
-
-// GetServiceConfig mocks base method.
-func (m *MockSource) GetServiceConfig(arg0 string) (conf.Config, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetServiceConfig", arg0)
-	ret0, _ := ret[0].(conf.Config)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetServiceConfig indicates an expected call of GetServiceConfig.
-func (mr *MockSourceMockRecorder) GetServiceConfig(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetServiceConfig", reflect.TypeOf((*MockSource)(nil).GetServiceConfig), arg0)
-}
-
 // ID mocks base method.
 func (m *MockSource) ID() string {
 	m.ctrl.T.Helper()
@@ -104,6 +75,35 @@ func (m *MockSource) Load(arg0 context.Context, arg1 []string) error {
 func (mr *MockSourceMockRecorder) Load(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Load", reflect.TypeOf((*MockSource)(nil).Load), arg0, arg1)
+}
+
+// Priority mocks base method.
+func (m *MockSource) Priority() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Priority")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// Priority indicates an expected call of Priority.
+func (mr *MockSourceMockRecorder) Priority() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Priority", reflect.TypeOf((*MockSource)(nil).Priority))
+}
+
+// ServiceConfig mocks base method.
+func (m *MockSource) ServiceConfig(arg0 string) (conf.Config, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ServiceConfig", arg0)
+	ret0, _ := ret[0].(conf.Config)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ServiceConfig indicates an expected call of ServiceConfig.
+func (mr *MockSourceMockRecorder) ServiceConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ServiceConfig", reflect.TypeOf((*MockSource)(nil).ServiceConfig), arg0)
 }
 
 // MockSourcesStorage is a mock of SourcesStorage interface.

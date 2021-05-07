@@ -55,7 +55,7 @@ var _ = Describe("Provider", func() {
 		})
 	})
 
-	Describe("Load,GetServiceConfig", func() {
+	Describe("Load,ServiceConfig", func() {
 		var (
 			services = []string{"testsvc1", "testsvc2", "testsvc3"}
 			sources  = []conf.Source{

@@ -43,8 +43,8 @@ func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStor
 	}
 }
 
-// GetServiceConfig provide service config from cache
-func (p *ConfigProvider) GetServiceConfig(serviceName string, opts ...*Option) (Config, error) {
+// ServiceConfig provide service config from cache
+func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Config, error) {
 	return p.configs.Get(serviceName)
 }
 
@@ -87,7 +87,7 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 			p.logger.Error().Err(err).Send()
 		}
 
-		priority = src.GetPriority()
+		priority = src.Priority()
 
 		cfgP, ok := tmpConfigs[result.Service]
 		if !ok || priority > cfgP.prt {

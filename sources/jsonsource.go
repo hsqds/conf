@@ -82,13 +82,13 @@ func (s *JSONFileSource) Close(ctx context.Context) error {
 	return nil
 }
 
-// GetPriority
-func (s *JSONFileSource) GetPriority() int {
+// Priority
+func (s *JSONFileSource) Priority() int {
 	return s.priority
 }
 
-// GetServiceConfig
-func (s *JSONFileSource) GetServiceConfig(serviceName string) (conf.Config, error) {
+// ServiceConfig
+func (s *JSONFileSource) ServiceConfig(serviceName string) (conf.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
 		return nil, fmt.Errorf("could not get config for %q service", serviceName)

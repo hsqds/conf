@@ -61,7 +61,7 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source, services []string
 
 	for _, svc := range services {
 		cl.logger.Debug().Str("service", svc).Msg("getting service config")
-		cfg, err := src.GetServiceConfig(svc)
+		cfg, err := src.ServiceConfig(svc)
 		if err != nil {
 			result.Err = err
 			result.Service = svc

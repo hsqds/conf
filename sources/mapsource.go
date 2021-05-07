@@ -34,13 +34,13 @@ func (s *MapSource) Load(ctx context.Context, services []string) error {
 	return nil
 }
 
-// GetPriority
-func (s *MapSource) GetPriority() int {
+// Priority
+func (s *MapSource) Priority() int {
 	return s.priority
 }
 
-// GetServiceConfig
-func (s *MapSource) GetServiceConfig(serviceName string) (conf.Config, error) {
+// ServiceConfig
+func (s *MapSource) ServiceConfig(serviceName string) (conf.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
 		return nil, fmt.Errorf("could not get config for %s service", serviceName)
