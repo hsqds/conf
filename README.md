@@ -6,7 +6,7 @@ not recomended for production use
 application may run many services, like grpc, http or by messaging over queues.
 `conf` let the user to retrieve services configs from different sources.
 
->> instantiaite provider -> add sources -> load config data -> use config data
+`instantiaite provider -> add sources -> load config data -> use config data`
 
 ## sources
 each source has priority
