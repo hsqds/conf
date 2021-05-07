@@ -9,7 +9,7 @@ import (
 
 type Getter interface {
 	// Get config value by key
-	Get(key, defaultValue string) string
+	Get(key, defaultValue string) (string, bool)
 }
 
 type Formatter interface {
@@ -27,13 +27,13 @@ type Config interface {
 type MapConfig map[string]string
 
 // Get returns value by key or defaultValue
-func (m MapConfig) Get(key, defaultValue string) string {
+func (m MapConfig) Get(key, defaultValue string) (string, bool) {
 	val, ok := m[key]
 	if !ok {
-		return defaultValue
+		return defaultValue, false
 	}
 
-	return val
+	return val, true
 }
 
 // Fmt renders `pattern` filling it with config values

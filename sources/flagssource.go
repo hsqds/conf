@@ -66,18 +66,16 @@ func (s *FlagsSource) GetServiceConfig(serviceName string) (conf.Config, error) 
 
 // Load
 func (s *FlagsSource) Load(ctx context.Context, services []string) error {
-	var err error
-	s.data, err = s.parse(services, os.Args)
-	if err != nil {
-		return fmt.Errorf("could not parse flags: %w", err)
-	}
+	s.data = s.parse(services, os.Args)
 	return nil
 }
 
 // parse gets config parameters from args
-func (s *FlagsSource) parse(services []string, args []string) (map[string]conf.Config, error) {
+func (s *FlagsSource) parse(services, args []string) map[string]conf.Config {
 	s.logger.Debug().Interface("services", services).Interface("args", args).Send()
 	configs := make(map[string]conf.Config)
+
+	const splittedCount = 2
 
 	var svcPrefix string
 	for _, svc := range services {
@@ -89,11 +87,12 @@ func (s *FlagsSource) parse(services []string, args []string) (map[string]conf.C
 				continue
 			}
 			keyVal := strings.Replace(arg, svcPrefix, "", 1)
-			splitted := strings.SplitN(keyVal, assignment, 2)
+			splitted := strings.SplitN(keyVal, assignment, splittedCount)
 
 			s.logger.Debug().Interface("splitted", splitted).Send()
 
-			if len(splitted) < 2 {
+			// yet ignoring bool flags
+			if len(splitted) < splittedCount {
 				continue
 			}
 
@@ -102,5 +101,5 @@ func (s *FlagsSource) parse(services []string, args []string) (map[string]conf.C
 		configs[svc] = svcConfig
 	}
 
-	return configs, nil
+	return configs
 }
