@@ -76,6 +76,11 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 	for _, result := range p.loader.Load(ctx, p.sources.List(), services) {
 		p.logger.Debug().Interface("result", result)
 
+		if result.Err != nil {
+			p.logger.Warn().Err(result.Err).Send()
+			continue
+		}
+
 		src, err := p.sources.Get(result.SourceID)
 		if err != nil {
 			err = fmt.Errorf("could not get source by id (%q): %w", result.SourceID, err)

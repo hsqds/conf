@@ -32,7 +32,7 @@ type ConfigsLoader struct {
 
 // NewConfigsLoader
 func NewConfigsLoader(logger *zerolog.Logger) *ConfigsLoader {
-	*logger = logger.With().Caller().Str("component", "conf.loader").Logger().Level(zerolog.DebugLevel)
+	*logger = logger.With().Str("component", "conf.loader").Logger().Level(zerolog.DebugLevel)
 
 	return &ConfigsLoader{*logger}
 }
