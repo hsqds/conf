@@ -88,6 +88,5 @@ or format config parameters calling `Fmt` method
 ```
 
 ## ROADMAD:
-* now - remove zerolog from dependencies
-* v0.1 - jsonfile source, env source, flags source
+* v0.1 - jsonfile source, env source, flags source, full test coverage
 * v0.2 - ability to subscribe for source updates

@@ -3,7 +3,7 @@ lint:
 
 .PHONY: test
 test:
-	go test -race ./...
+	go test -race -cover -coverprofile=coverage.txt -outputdir=./test ./...
 
 gen-mocks:
 	mockgen \

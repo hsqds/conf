@@ -13,8 +13,8 @@ import (
 // testConf represents
 type testConf struct{}
 
-func (t testConf) Get(_, _ string) (string, bool) {
-	return "", true
+func (t testConf) Get(_, _ string) string {
+	return ""
 }
 
 // Fmt

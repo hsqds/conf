@@ -1,44 +1,57 @@
 package conf_test
 
 import (
-	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/hsqds/conf"
-	"github.com/hsqds/conf/test/mocks"
 )
 
-var _ = Describe("ConfigStorage", func() {
+var _ = Describe("Config", func() {
 	var (
-		mockController *gomock.Controller
-		configMock     *mocks.MockConfig
-		confStorage    conf.ConfigsStorage
+		config *conf.MapConfig
+
+		k1value = "value1"
+		k2value = "value2"
 	)
 
 	BeforeEach(func() {
-		mockController = gomock.NewController(GinkgoT())
-		configMock = mocks.NewMockConfig(mockController)
-		confStorage = conf.NewSyncedConfigsStorage()
+		config = &conf.MapConfig{
+			"key1": k1value,
+			"key2": k2value,
+		}
 	})
 
 	AfterEach(func() {
-		mockController.Finish()
+		config = nil
 	})
 
-	Describe("Get,Set", func() {
-		var serviceName = "testService"
+	Describe("Get", func() {
+		It("should return value when it is set", func() {
+			v1 := config.Get("key1", "default")
+			Expect(v1).To(Equal(k1value))
 
-		It("should get/set configs without errors", func() {
-			err := confStorage.Set(serviceName, configMock)
-			Expect(err).To(BeNil())
-			serviceConf, err := confStorage.Get(serviceName)
-			Expect(err).To(BeNil())
-			Expect(serviceConf).To(Equal(configMock))
+			v2 := config.Get("key2", "default")
+			Expect(v2).To(Equal(k2value))
 		})
 
-		It("should return error when service config does not exist", func() {
-			_, err := confStorage.Get(serviceName)
+		It("should return default value when no value is set", func() {
+			const def = "default"
+			v := config.Get("key", def)
+			Expect(v).To(Equal(def))
+		})
+	})
+
+	Describe("Fmt", func() {
+		It("should return formatted string", func() {
+			f := k1value + "-" + k2value
+			s, err := config.Fmt("{{.key1}}-{{.key2}}")
+			Expect(err).To(BeNil())
+			Expect(s).To(Equal(f))
+		})
+
+		It("should return error when pattern is not correct", func() {
+			_, err := config.Fmt(".}}{{")
 			Expect(err).NotTo(BeNil())
 		})
 	})

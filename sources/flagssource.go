@@ -95,7 +95,8 @@ func (s *FlagsSource) parse(services, args []string) map[string]conf.Config {
 				continue
 			}
 
-			svcConfig[splitted[0]] = splitted[1]
+			key := toCamelCase(splitted[0], delimiter)
+			svcConfig[key] = splitted[1]
 		}
 		configs[svc] = svcConfig
 	}

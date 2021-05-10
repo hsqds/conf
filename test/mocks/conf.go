@@ -211,12 +211,11 @@ func (mr *MockConfigMockRecorder) Fmt(arg0 interface{}) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockConfig) Get(arg0, arg1 string) (string, bool) {
+func (m *MockConfig) Get(arg0, arg1 string) string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", arg0, arg1)
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(bool)
-	return ret0, ret1
+	return ret0
 }
 
 // Get indicates an expected call of Get.
