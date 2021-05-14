@@ -7,24 +7,28 @@ import (
 )
 
 // TestConfig represents `provider.Config` interface
-// implementation for testing
+// implementation for testing.
 type TestConfig struct {
 	value string
 }
 
-// NewTestConfig
+// NewTestConfig.
 func NewTestConfig() TestConfig {
 	return TestConfig{
 		value: fmt.Sprintf("test config id: %s", uuid.NewString()),
 	}
 }
 
-// Get
+// Get.
 func (c *TestConfig) Get(key, defaultValue string) string {
 	return c.value
 }
 
-// Fmt
+// Set
+func (c *TestConfig) Set(key, value string) {
+}
+
+// Fmt.
 func (c *TestConfig) Fmt(pattern string) (string, error) {
 	return "", nil
 }

@@ -8,12 +8,11 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/rs/zerolog"
-
 	"github.com/hsqds/conf"
+	"github.com/rs/zerolog"
 )
 
-// JSONFileStorage represents
+// JSONFileStorage represents.
 type JSONFileSource struct {
 	id       string
 	data     map[string]conf.Config
@@ -25,11 +24,12 @@ type JSONFileSource struct {
 	logger zerolog.Logger
 }
 
-// NewJSONFileSource
+// NewJSONFileSource.
 func NewJSONFileSource(priority int, filename string, logger *zerolog.Logger) *JSONFileSource {
 	*logger = logger.With().Caller().Str("component", "source.jsonfile").Logger()
+
 	return &JSONFileSource{
-		id:       uuid.NewString(),
+		id:       fmt.Sprintf("jsonfile-%s", uuid.NewString()),
 		data:     make(map[string]conf.Config),
 		priority: priority,
 		filename: filename,
@@ -37,14 +37,15 @@ func NewJSONFileSource(priority int, filename string, logger *zerolog.Logger) *J
 	}
 }
 
-// ID
+// ID.
 func (s *JSONFileSource) ID() string {
 	return s.id
 }
 
-// Load
+// Load.
 func (s *JSONFileSource) Load(ctx context.Context, services []string) error {
 	var err error
+
 	s.file, err = os.Open(s.filename)
 	if err != nil {
 		return fmt.Errorf("could not open file: %w", err)
@@ -58,6 +59,7 @@ func (s *JSONFileSource) Load(ctx context.Context, services []string) error {
 	s.logger.Debug().Str("raw", string(raw)).Send()
 
 	tmp := make(map[string]conf.MapConfig)
+
 	err = json.Unmarshal(raw, &tmp)
 	if err != nil {
 		return fmt.Errorf("could not unmarshal json: %w", err)
@@ -72,26 +74,24 @@ func (s *JSONFileSource) Load(ctx context.Context, services []string) error {
 	return nil
 }
 
-// Close
-func (s *JSONFileSource) Close(ctx context.Context) error {
-	err := s.file.Close()
-	if err != nil {
-		return fmt.Errorf("could not close source file: %w", err)
+// Close.
+func (s *JSONFileSource) Close(ctx context.Context) {
+	if err := s.file.Close(); err != nil {
+		s.logger.Warn().Err(err).Send()
 	}
-
-	return nil
 }
 
-// Priority
+// Priority.
 func (s *JSONFileSource) Priority() int {
 	return s.priority
 }
 
-// ServiceConfig
+// ServiceConfig.
 func (s *JSONFileSource) ServiceConfig(serviceName string) (conf.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
-		return nil, fmt.Errorf("could not get config for %q service", serviceName)
+		return nil, ServiceConfigError{serviceName, s.id}
 	}
+
 	return cfg, nil
 }

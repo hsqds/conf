@@ -1,11 +1,12 @@
 # conf
 !WARNING: WIP
-not recomended for production use
+"just for fun" pet-project, not recommended for production use
 
 ## main idea
 application may run many services, like grpc, http or by messaging over queues.
 `conf` let the user to retrieve services configs from different sources.
 
+`conf` is abstraction 
 `instantiaite provider -> add sources -> load config data -> use config data`
 
 ## sources

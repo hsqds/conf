@@ -2,11 +2,10 @@ package conf_test
 
 import (
 	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Source", func() {

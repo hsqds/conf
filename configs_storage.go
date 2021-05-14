@@ -1,17 +1,16 @@
 package conf
 
 import (
-	"fmt"
 	"sync"
 )
 
-// ConfigsStorage
+// ConfigsStorage.
 type ConfigsStorage interface {
 	Get(serviceName string) (Config, error)
 	Set(serviceName string, cfg Config) error
 }
 
-// ConfigsStorage represents configs map protected with mutex
+// ConfigsStorage represents configs map protected with mutex.
 type SyncedConfigsStorage struct {
 	mtx     sync.Mutex
 	configs map[string]Config
@@ -23,7 +22,7 @@ func NewSyncedConfigsStorage() *SyncedConfigsStorage {
 	}
 }
 
-// Set
+// Set.
 func (c *SyncedConfigsStorage) Set(serviceName string, cfg Config) error {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
@@ -33,14 +32,14 @@ func (c *SyncedConfigsStorage) Set(serviceName string, cfg Config) error {
 	return nil
 }
 
-// Get receives configs by service name
+// Get receives configs by service name.
 func (c *SyncedConfigsStorage) Get(serviceName string) (Config, error) {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 
 	cfg, ok := c.configs[serviceName]
 	if !ok {
-		return nil, fmt.Errorf("no config for service %q", serviceName)
+		return nil, ServiceConfigStorageError{serviceName}
 	}
 
 	return cfg, nil

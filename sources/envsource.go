@@ -3,94 +3,82 @@ package sources
 import (
 	"context"
 	"fmt"
-	"os"
-	"strings"
+	"regexp"
 
 	"github.com/google/uuid"
+
 	"github.com/hsqds/conf"
-	"github.com/rs/zerolog"
 )
 
-// EnvSource represents
+// EnvSource represents.
 type EnvSource struct {
 	id       string
 	data     map[string]conf.Config
 	priority int
 
-	logger zerolog.Logger
+	envs []string
 }
 
-// NewEnvSource
-func NewEnvSource(priority int, logger *zerolog.Logger) *EnvSource {
-	*logger = logger.With().Str("component", "source.env").Logger()
+// NewEnvSource.
+func NewEnvSource(priority int, envs []string) *EnvSource {
 	return &EnvSource{
-		id:       uuid.NewString(),
+		id:       fmt.Sprintf("env-%s", uuid.NewString()),
 		data:     make(map[string]conf.Config),
 		priority: priority,
-		logger:   *logger,
+		envs:     envs,
 	}
 }
 
-// Close
-func (s *EnvSource) Close(ctx context.Context) error {
-	return nil
-}
+// Close.
+func (s *EnvSource) Close(ctx context.Context) {}
 
-// ID
+// ID.
 func (s *EnvSource) ID() string {
 	return s.id
 }
 
-// Priority
+// Priority.
 func (s *EnvSource) Priority() int {
 	return s.priority
 }
 
-// ServiceConfig
+// ServiceConfig.
 func (s *EnvSource) ServiceConfig(serviceName string) (conf.Config, error) {
 	cfg, ok := s.data[serviceName]
 	if !ok {
-		return nil, fmt.Errorf("could not get config for %s service", serviceName)
+		return nil, ServiceConfigError{serviceName, s.id}
 	}
 
 	return cfg, nil
 }
 
-// Load
+// Load.
 func (s *EnvSource) Load(ctx context.Context, services []string) error {
-	// TODO: check what is faster: regex or iteration over services names
 	const (
-		delimiter     = "_"
-		assignment    = "="
-		splittedCount = 2
+		delimiter  = "_"
+		assignment = "="
+		matchesNum = 4
+		reKeyIndex = 2
+		reValIndex = 3
 	)
 
-	envs := os.Environ()
+	services = uniqueStrings(services)
 
 	for _, svc := range services {
-		svcPrefix := fmt.Sprintf("%s%s", strings.ToUpper(svc), delimiter)
+		pattern := fmt.Sprintf(`((?i)%s%s)([\w]+)%s([\w]+)`, svc, delimiter, assignment)
+		svcRe := regexp.MustCompile(pattern)
+
 		svcConfig := conf.MapConfig{}
-		for _, kv := range envs {
-			if !strings.HasPrefix(kv, svcPrefix) {
-				continue
-			}
-			kv = strings.ReplaceAll(kv, svcPrefix, "")
-			s.logger.Debug().Msg(kv)
-			splitted := strings.SplitN(kv, assignment, splittedCount)
 
-			if len(splitted) < splittedCount {
+		for _, kv := range s.envs {
+			matches := svcRe.FindStringSubmatch(kv)
+			if len(matches) < matchesNum {
 				continue
 			}
 
-			s.logger.Debug().Interface("splitted", splitted).Send()
-
-			key := toCamelCase(splitted[0], delimiter)
-			s.logger.Debug().Str("cc", key).Send()
-
-			svcConfig[key] = splitted[1]
+			key := toCamelCase(matches[reKeyIndex], delimiter)
+			svcConfig.Set(key, matches[reValIndex])
 		}
-
-		s.logger.Debug().Str("service", svc).Interface("service config", svcConfig).Send()
 
 		s.data[svc] = svcConfig
 	}

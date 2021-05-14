@@ -1,7 +1,14 @@
 package sources
 
-import "errors"
+import "fmt"
 
-var (
-	ErrNoSuchKey = errors.New("no such key")
-)
+// ServiceConfigError represents.
+type ServiceConfigError struct {
+	ServiceName string
+	SourceID    string
+}
+
+// Error.
+func (e ServiceConfigError) Error() string {
+	return fmt.Sprintf("source %q has no config for service %q", e.SourceID, e.ServiceName)
+}

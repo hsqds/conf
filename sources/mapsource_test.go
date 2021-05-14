@@ -3,21 +3,23 @@ package sources_test
 import (
 	"context"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/sources"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-// testConf represents
+// testConf represents.
 type testConf struct{}
 
 func (t testConf) Get(_, _ string) string {
 	return ""
 }
 
-// Fmt
+// Set
+func (t testConf) Set(_, _ string) {}
+
+// Fmt.
 func (t testConf) Fmt(_ string) (string, error) {
 	return "", nil
 }
@@ -40,7 +42,8 @@ var _ = Describe("Mapsource", func() {
 
 		for i := 0; i < c; i++ {
 			It("should have unique ID", func() {
-				tmpSrc := sources.NewMapSource(i, cfgData)
+				const prt = 1
+				tmpSrc := sources.NewMapSource(prt, cfgData)
 				id := tmpSrc.ID()
 				_, ok := ids[id]
 				Expect(ok).To(BeFalse())

@@ -36,11 +36,9 @@ func (m *MockSource) EXPECT() *MockSourceMockRecorder {
 }
 
 // Close mocks base method.
-func (m *MockSource) Close(arg0 context.Context) error {
+func (m *MockSource) Close(arg0 context.Context) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	m.ctrl.Call(m, "Close", arg0)
 }
 
 // Close indicates an expected call of Close.
@@ -222,6 +220,18 @@ func (m *MockConfig) Get(arg0, arg1 string) string {
 func (mr *MockConfigMockRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockConfig)(nil).Get), arg0, arg1)
+}
+
+// Set mocks base method.
+func (m *MockConfig) Set(arg0, arg1 string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Set", arg0, arg1)
+}
+
+// Set indicates an expected call of Set.
+func (mr *MockConfigMockRecorder) Set(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockConfig)(nil).Set), arg0, arg1)
 }
 
 // MockConfigStorage is a mock of ConfigsStorage interface.

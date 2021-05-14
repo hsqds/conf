@@ -6,12 +6,11 @@ import (
 	"os"
 
 	"github.com/golang/mock/gomock"
+	"github.com/hsqds/conf"
+	"github.com/hsqds/conf/test/mocks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/rs/zerolog"
-
-	"github.com/hsqds/conf"
-	"github.com/hsqds/conf/test/mocks"
 )
 
 var _ = Describe("Provider", func() {

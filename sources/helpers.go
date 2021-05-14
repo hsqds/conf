@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-// toCamelCase
+// toCamelCase.
 func toCamelCase(key, delimiter string) string {
 	const (
 		minDelimCount = 1
@@ -22,4 +22,24 @@ func toCamelCase(key, delimiter string) string {
 	}
 
 	return strings.Join(segments, "")
+}
+
+// uniqueStrings returns slice of strings containing only unique strings
+// !! Case-insensitive
+func uniqueStrings(strs []string) []string {
+	m := make(map[string]struct{}, len(strs))
+	ustrs := make([]string, 0, len(strs))
+
+	var s string
+	for i := range strs {
+		s = strings.ToUpper(strs[i])
+		if _, ok := m[s]; ok {
+			continue
+		}
+
+		m[s] = struct{}{}
+		ustrs = append(ustrs, strs[i])
+	}
+
+	return ustrs
 }

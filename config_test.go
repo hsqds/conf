@@ -1,10 +1,9 @@
 package conf_test
 
 import (
+	"github.com/hsqds/conf"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/hsqds/conf"
 )
 
 var _ = Describe("Config", func() {

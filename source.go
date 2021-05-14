@@ -2,19 +2,17 @@ package conf
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"sync"
 )
 
-// SourceSetter
+// SourceSetter.
 type SourcesStorage interface {
 	Append(src Source) error
 	Get(sourceID string) (Source, error)
 	List() []Source
 }
 
-// Source
+// Source.
 type Source interface {
 	// Shoud return unique source identifier persistent for in all source lifetime
 	ID() string
@@ -25,30 +23,31 @@ type Source interface {
 	// ServiceConfig
 	ServiceConfig(serviceName string) (Config, error)
 	// Close closes connections
-	Close(context.Context) error
+	Close(context.Context)
 }
 
-// syncedSources represents sources map protected with mutex
+// syncedSources represents sources map protected with mutex.
 type SyncedSourcesStorage struct {
 	mtx     sync.Mutex
 	sources map[string]Source
 }
 
-// newSyncedSources
+// newSyncedSources.
 func NewSyncedSourcesStorage() *SyncedSourcesStorage {
 	return &SyncedSourcesStorage{
 		sources: make(map[string]Source),
 	}
 }
 
-// Set
+// Set.
 func (s *SyncedSourcesStorage) Append(src Source) error {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
+
 	srcID := src.ID()
 
 	if _, ok := s.sources[srcID]; ok {
-		return errors.New("source is not unique")
+		return SourceUniquenessError{srcID}
 	}
 
 	s.sources[srcID] = src
@@ -56,7 +55,7 @@ func (s *SyncedSourcesStorage) Append(src Source) error {
 	return nil
 }
 
-// List returns sources as a slice
+// List returns sources as a slice.
 func (s *SyncedSourcesStorage) List() []Source {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
@@ -69,14 +68,14 @@ func (s *SyncedSourcesStorage) List() []Source {
 	return lst
 }
 
-// Get
+// Get.
 func (s *SyncedSourcesStorage) Get(sourceID string) (Source, error) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
 	src, ok := s.sources[sourceID]
 	if !ok {
-		return nil, fmt.Errorf("syncedSourceStorage: no source with id %q", sourceID)
+		return nil, SourceStorageError{sourceID}
 	}
 
 	return src, nil

@@ -6,13 +6,12 @@ import (
 	"fmt"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"github.com/rs/zerolog/log"
-
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
 	"github.com/hsqds/conf/test/stubs"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/rs/zerolog/log"
 )
 
 var _ = Describe("Loader", func() {
@@ -47,7 +46,7 @@ var _ = Describe("Loader", func() {
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
 			src.EXPECT().ServiceConfig(gomock.Any()).Return(conf.Config(&cfg), nil).Times(len(services))
-			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
+			src.EXPECT().Close(gomock.Any()).Times(1)
 
 			mockSources = []conf.Source{
 				conf.Source(src),
@@ -69,7 +68,7 @@ var _ = Describe("Loader", func() {
 
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(err).Times(1)
-			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
+			src.EXPECT().Close(gomock.Any()).Times(1)
 
 			mockSources = []conf.Source{
 				conf.Source(src),
@@ -91,7 +90,7 @@ var _ = Describe("Loader", func() {
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
 			src.EXPECT().ServiceConfig(gomock.Any()).Return(nil, err).Times(configsCount)
-			src.EXPECT().Close(gomock.Any()).Return(nil).Times(1)
+			src.EXPECT().Close(gomock.Any()).Times(1)
 
 			mockSources = []conf.Source{
 				conf.Source(src),

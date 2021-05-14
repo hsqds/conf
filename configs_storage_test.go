@@ -2,11 +2,10 @@ package conf_test
 
 import (
 	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("ConfigStorage", func() {
@@ -27,7 +26,7 @@ var _ = Describe("ConfigStorage", func() {
 	})
 
 	Describe("Get,Set", func() {
-		var serviceName = "testService"
+		serviceName := "testService"
 
 		It("should get/set configs without errors", func() {
 			err := confStorage.Set(serviceName, configMock)
