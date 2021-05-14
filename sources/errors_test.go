@@ -9,7 +9,11 @@ import (
 
 // TestServiceConfigError
 func TestServiceConfigError(t *testing.T) {
+	t.Parallel()
+
 	t.Run("error message should contain source ID and service name", func(t *testing.T) {
+		t.Parallel()
+
 		const (
 			svcName = "testService1231"
 			srcID   = "lskdf9832u982"

@@ -10,6 +10,8 @@ import (
 
 // TestToCamelCase
 func TestToCamelCase(t *testing.T) {
+	t.Parallel()
+
 	const (
 		delimiter = "_"
 	)
@@ -24,18 +26,21 @@ func TestToCamelCase(t *testing.T) {
 		{"many_seg_ments_more_and_more", "manySegMentsMoreAndMore"},
 	}
 
-	for _, c := range cc {
-		t.Run("format to camelCase", func(t *testing.T) {
+	for i := range cc {
+		c := cc[i]
+		t.Run(c.in, func(t *testing.T) {
+			t.Parallel()
+
 			r := sources.ToCamelCase(c.in, delimiter)
-			if r != c.out {
-				t.Errorf("expect %q got %q", c.out, r)
-			}
+			assert.Equal(t, c.out, r)
 		})
 	}
 }
 
 // TestUniqueStrings
 func TestUniqueStrings(t *testing.T) {
+	t.Parallel()
+
 	input := []string{
 		"string1",
 		"string2",

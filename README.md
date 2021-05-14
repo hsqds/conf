@@ -50,42 +50,42 @@ first we need to create config provider
 
 provider uses zerolog logger
 ```go
-	cp := conf.NewDefaultConfigProvider(&logger)
-	defer cp.Close(ctx)
+cp := conf.NewDefaultConfigProvider(&logger)
+defer cp.Close(ctx)
 ```
 
 then add some sources
 ```go
-	cp.AddSource(
-        // `config.json` has higher priority than `defaults.json`
-		sources.NewJSONFileSource(100, "config.json", &logger),
-		sources.NewJSONFileSource(90, "defaults.json", &logger),
-	)
+cp.AddSource(
+    // `config.json` has higher priority than `defaults.json`
+    sources.NewJSONFileSource(100, "config.json", &logger),
+    sources.NewJSONFileSource(90, "defaults.json", &logger),
+)
 ```
 
 then load data from sources and get needed service config
 ```go
-	err := cp.Load(context.Background(), "http", "grpc")
-    processErr(err)
-    // `config.json` data will override `dafaults.json` respecting the priority
-	httpConfig, err := cp.ServiceConfig("http")
-    processErr(err)
-    // grpc config will be loaded from `defaults.json`
-    grpcConfig, err := cp.ServiceConfig("grpc")
-    processErr(err)
+err := cp.Load(context.Background(), "http", "grpc")
+processErr(err)
+// `config.json` data will override `dafaults.json` respecting the priority
+httpConfig, err := cp.ServiceConfig("http")
+processErr(err)
+// grpc config will be loaded from `defaults.json`
+grpcConfig, err := cp.ServiceConfig("grpc")
+processErr(err)
 ```
 
 now we may get config parameter using config `Get` method
 ```go
-    value, ok := httpConfig.Get("host", "default.svc") // "0.0.0.0", true - from `configs.json`
-    value, ok := grpcConfig.Get("host", "default.svc") // "auth.svc", true - from `defaults.json`
-    value, ok := grpcConfig.Get("inexistingKey", "default.value") // "default.value", false - defaultValue
+value, ok := httpConfig.Get("host", "default.svc") // "0.0.0.0", true - from `configs.json`
+value, ok := grpcConfig.Get("host", "default.svc") // "auth.svc", true - from `defaults.json`
+value, ok := grpcConfig.Get("inexistingKey", "default.value") // "default.value", false - defaultValue
 ```
 
 or format config parameters calling `Fmt` method
 ```go
-    formatted, err := httpConfig.Fmt("{{.host}}:{{.port}}") // "0.0.0.0:8080"
-    processErr(err)
+formatted, err := httpConfig.Fmt("{{.host}}:{{.port}}") // "0.0.0.0:8080"
+processErr(err)
 ```
 
 ## ROADMAD:

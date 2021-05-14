@@ -19,8 +19,10 @@ func TestEnvSource(t *testing.T) {
 		svc1 = "service1"
 		svc2 = "service2"
 	)
+
 	t.Run("ID", func(t *testing.T) {
 		t.Parallel()
+
 		src := sources.NewEnvSource(prt, []string{})
 		id := src.ID()
 		if !strings.Contains(id, "env") {
@@ -79,6 +81,8 @@ func TestEnvSource(t *testing.T) {
 		})
 
 		t.Run("ServiceConfig result should be idempotant", func(t *testing.T) {
+			t.Parallel()
+
 			src := sources.NewEnvSource(prt, input)
 			src.Load(context.Background(), []string{svc1, svc2, svc1})
 
@@ -96,6 +100,8 @@ func TestEnvSource(t *testing.T) {
 		})
 
 		t.Run("ServiceConfig should return ServiceConfigError when service config not found", func(t *testing.T) {
+			t.Parallel()
+
 			src := sources.NewEnvSource(prt, input)
 			src.Load(context.Background(), []string{svc1})
 
