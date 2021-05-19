@@ -12,6 +12,8 @@ const (
 	defaultLoadTimeout = 3000
 )
 
+// TODO: golang.org/x/sync/errgroup
+
 // Loader.
 type Loader interface {
 	Load(ctx context.Context, sources []Source, serviceNames []string) []LoadResult
@@ -49,10 +51,6 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source,
 	result := LoadResult{
 		SourceID: src.ID(),
 	}
-
-	defer func(res *LoadResult) {
-		cl.logger.Debug().Interface("result", *res).Msg("loading routine done")
-	}(&result)
 
 	cl.logger.Debug().Msg("Start loading from source")
 
@@ -106,8 +104,6 @@ func (cl *ConfigsLoader) Load(ctx context.Context, sources []Source, serviceName
 	cl.logger.Debug().Int("src count", srcCount).Msg("wait group value")
 
 	for _, src := range sources {
-		cl.logger.Debug().Str("source id", src.ID()).Msg("loading from source")
-
 		go cl.load(ctx, src, serviceNames, resultsCh, &wg)
 	}
 

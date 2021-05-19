@@ -3,7 +3,6 @@ package sources
 import (
 	"context"
 	"fmt"
-	"regexp"
 
 	"github.com/google/uuid"
 
@@ -57,30 +56,13 @@ func (s *EnvSource) Load(ctx context.Context, services []string) error {
 	const (
 		delimiter  = "_"
 		assignment = "="
-		matchesNum = 4
-		reKeyIndex = 2
-		reValIndex = 3
+		prefix     = ""
 	)
 
-	services = uniqueStrings(services)
-
-	for _, svc := range services {
-		pattern := fmt.Sprintf(`((?i)%s%s)([\w]+)%s([\w]+)`, svc, delimiter, assignment)
-		svcRe := regexp.MustCompile(pattern)
-
-		svcConfig := conf.MapConfig{}
-
-		for _, kv := range s.envs {
-			matches := svcRe.FindStringSubmatch(kv)
-			if len(matches) < matchesNum {
-				continue
-			}
-
-			key := toCamelCase(matches[reKeyIndex], delimiter)
-			svcConfig.Set(key, matches[reValIndex])
-		}
-
-		s.data[svc] = svcConfig
+	for _, svc := range uniqueStrings(services) {
+		s.data[svc] = conf.NewMapConfig(
+			sieveServiceConfig(svc, prefix, delimiter, assignment, s.envs),
+		)
 	}
 
 	return nil

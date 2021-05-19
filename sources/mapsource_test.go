@@ -2,81 +2,77 @@ package sources_test
 
 import (
 	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/sources"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 )
 
-// testConf represents.
-type testConf struct{}
+// TestMapSource
+func TestMapSource(t *testing.T) {
+	t.Parallel()
 
-func (t testConf) Get(_, _ string) string {
-	return ""
-}
-
-// Set
-func (t testConf) Set(_, _ string) {}
-
-// Fmt.
-func (t testConf) Fmt(_ string) (string, error) {
-	return "", nil
-}
-
-var _ = Describe("Mapsource", func() {
-	var (
-		priority    = 4
-		serviceName = "service1"
-		cfgData     = map[string]conf.Config{
-			serviceName: testConf{},
-		}
-		src = sources.NewMapSource(priority, cfgData)
+	const (
+		priority = 50
+		svc1     = "service1"
+		svc2     = "service2"
 	)
 
-	Describe("initialization", func() {
+	t.Run("ID", func(t *testing.T) {
+		t.Parallel()
+
+		s := sources.NewMapSource(priority, map[string]conf.Config{})
+		assert.Contains(t, s.ID(), "map")
+	})
+
+	t.Run("Priority", func(t *testing.T) {
+		t.Parallel()
+
+		s := sources.NewMapSource(priority, map[string]conf.Config{})
+		assert.Equal(t, s.Priority(), priority)
+	})
+
+	t.Run("Load", func(t *testing.T) {
+		t.Parallel()
+
+		s := sources.NewMapSource(priority, map[string]conf.Config{})
+		err := s.Load(context.Background(), []string{svc1})
+		assert.Nil(t, err)
+	})
+
+	t.Run("ServiceConfig", func(t *testing.T) {
+		t.Parallel()
+
 		var (
-			c   = 10
-			ids = make(map[string]struct{}, c)
+			svc1Cfg = conf.NewMapConfig(map[string]string{
+				"key1": "val1",
+				"key2": "val2",
+			})
+
+			d = map[string]conf.Config{
+				svc1: svc1Cfg,
+			}
 		)
 
-		for i := 0; i < c; i++ {
-			It("should have unique ID", func() {
-				const prt = 1
-				tmpSrc := sources.NewMapSource(prt, cfgData)
-				id := tmpSrc.ID()
-				_, ok := ids[id]
-				Expect(ok).To(BeFalse())
-				ids[id] = struct{}{}
-			})
-		}
-	})
+		t.Run("should return valid config", func(t *testing.T) {
+			t.Parallel()
 
-	It("should load without errors", func() {
-		err := src.Load(context.Background(), []string{})
-		Expect(err).To(BeNil())
-	})
+			s := sources.NewMapSource(priority, d)
+			r, err := s.ServiceConfig(svc1)
 
-	It("should return priority", func() {
-		p := src.Priority()
-		Expect(p).Should(Equal(priority))
-	})
-
-	It("should close without errors", func() {
-		err := src.Close(context.Background())
-		Expect(err).To(BeNil())
-	})
-
-	Describe("getting service config", func() {
-		It("should return service config", func() {
-			cfg, err := src.ServiceConfig(serviceName)
-			Expect(err).To(BeNil())
-			Expect(cfg).NotTo(BeNil())
+			assert.Nil(t, err)
+			assert.Equal(t, svc1Cfg, r)
 		})
 
-		It("should return service config", func() {
-			_, err := src.ServiceConfig("inexisting")
-			Expect(err).NotTo(BeNil())
+		t.Run("should return ServiceConfigError when no config for service", func(t *testing.T) {
+			t.Parallel()
+
+			s := sources.NewMapSource(priority, d)
+			_, err := s.ServiceConfig(svc2)
+
+			assert.IsType(t, sources.ServiceConfigError{}, err)
 		})
 	})
-})
+}

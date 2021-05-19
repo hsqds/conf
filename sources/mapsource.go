@@ -50,6 +50,4 @@ func (s *MapSource) ServiceConfig(serviceName string) (conf.Config, error) {
 }
 
 // Close.
-func (s *MapSource) Close(ctx context.Context) error {
-	return nil
-}
+func (s *MapSource) Close(ctx context.Context) {}

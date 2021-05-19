@@ -1,57 +1,91 @@
 package conf_test
 
 import (
+	"testing"
+
 	"github.com/hsqds/conf"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 )
 
-var _ = Describe("Config", func() {
-	var (
-		config *conf.MapConfig
+// TestMapConfig
+func TestMapConfig(t *testing.T) {
+	t.Parallel()
 
-		k1value = "value1"
-		k2value = "value2"
+	const (
+		value1 = "value1"
+		value2 = "value2"
+		defVal = "defaultValue"
 	)
 
-	BeforeEach(func() {
-		config = &conf.MapConfig{
-			"key1": k1value,
-			"key2": k2value,
-		}
+	cfgData := map[string]string{
+		"key1": value1,
+		"key2": value2,
+	}
+
+	t.Run("NewMapConfig init with nil data", func(t *testing.T) {
+		t.Parallel()
+
+		c := conf.NewMapConfig(nil)
+		assert.IsType(t, &conf.MapConfig{}, c)
 	})
 
-	AfterEach(func() {
-		config = nil
-	})
+	t.Run("Get/Set", func(t *testing.T) {
+		t.Parallel()
 
-	Describe("Get", func() {
-		It("should return value when it is set", func() {
-			v1 := config.Get("key1", "default")
-			Expect(v1).To(Equal(k1value))
+		t.Run("Get should return correct value", func(t *testing.T) {
+			t.Parallel()
 
-			v2 := config.Get("key2", "default")
-			Expect(v2).To(Equal(k2value))
+			const (
+				newKey = "newKey"
+				newVal = "newVal"
+			)
+
+			c := conf.NewMapConfig(cfgData)
+			v1 := c.Get("key1", defVal)
+			assert.Equal(t, value1, v1)
+
+			c.Set(newKey, newVal)
+			nv := c.Get(newKey, defVal)
+			assert.Equal(t, newVal, nv)
 		})
 
-		It("should return default value when no value is set", func() {
-			const def = "default"
-			v := config.Get("key", def)
-			Expect(v).To(Equal(def))
-		})
-	})
+		t.Run("Get should return default value if key is not set", func(t *testing.T) {
+			t.Parallel()
 
-	Describe("Fmt", func() {
-		It("should return formatted string", func() {
-			f := k1value + "-" + k2value
-			s, err := config.Fmt("{{.key1}}-{{.key2}}")
-			Expect(err).To(BeNil())
-			Expect(s).To(Equal(f))
-		})
-
-		It("should return error when pattern is not correct", func() {
-			_, err := config.Fmt(".}}{{")
-			Expect(err).NotTo(BeNil())
+			c := conf.NewMapConfig(cfgData)
+			v1 := c.Get("key99", defVal)
+			assert.Equal(t, defVal, v1)
 		})
 	})
-})
+
+	t.Run("Fmt", func(t *testing.T) {
+		t.Parallel()
+
+		const (
+			pattern = "{{.key1}}-{{.key2}}"
+		)
+
+		t.Run("should return correct formatted string", func(t *testing.T) {
+			t.Parallel()
+
+			c := conf.NewMapConfig(cfgData)
+			exp := value1 + "-" + value2
+
+			r, err := c.Fmt(pattern)
+			assert.Nil(t, err)
+			assert.Equal(t, exp, r)
+		})
+
+		t.Run("should return error if pattern is invalid", func(t *testing.T) {
+			t.Parallel()
+
+			c := conf.NewMapConfig(cfgData)
+			_, err := c.Fmt(".}}{{")
+			assert.Error(t, err)
+		})
+
+		t.Run("should return error if pattern rendering failed", func(t *testing.T) {
+			t.Parallel()
+		})
+	})
+}

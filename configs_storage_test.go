@@ -1,11 +1,14 @@
 package conf_test
 
 import (
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 )
 
 var _ = Describe("ConfigStorage", func() {
@@ -42,3 +45,33 @@ var _ = Describe("ConfigStorage", func() {
 		})
 	})
 })
+
+// TestConfigsStorage
+func TestConfigsStorage(t *testing.T) {
+	t.Parallel()
+
+	t.Run("should get and set config", func(t *testing.T) {
+		t.Parallel()
+
+		const svc1 = "service1"
+
+		cfg := conf.NewMapConfig(map[string]string{})
+		s := conf.NewSyncedConfigsStorage()
+
+		err := s.Set(svc1, cfg)
+		assert.Nil(t, err)
+
+		r, err := s.Get(svc1)
+		assert.Nil(t, err)
+
+		assert.Equal(t, cfg, r)
+	})
+
+	t.Run("should return ServiceConfigStorageError when no config for service", func(t *testing.T) {
+		t.Parallel()
+
+		s := conf.NewSyncedConfigsStorage()
+		_, err := s.Get("serviceName")
+		assert.IsType(t, conf.ServiceConfigStorageError{}, err)
+	})
+}

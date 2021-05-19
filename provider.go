@@ -43,7 +43,7 @@ func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStor
 	}
 }
 
-// ServiceConfig provide service config from cache.
+// ServiceConfig provide service config from inner cache.
 func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Config, error) {
 	cfg, err := p.configs.Get(serviceName)
 	if err != nil {

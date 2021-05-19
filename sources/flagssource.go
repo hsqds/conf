@@ -4,10 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/google/uuid"
-	"github.com/rs/zerolog"
 
 	"github.com/hsqds/conf"
 )
@@ -20,25 +18,29 @@ type FlagsSource struct {
 
 	prefix string
 
-	logger zerolog.Logger
+	args []string
 }
 
-// NewFlagsSource.
-func NewFlagsSource(priority int, prefix string, logger *zerolog.Logger) *FlagsSource {
-	*logger = logger.With().Str("component", "source.flags").Logger()
+// NewFlagsSource initializes FlagsSource using standard `os.Args`.
+func NewFlagsSource(priority int, prefix string) *FlagsSource {
+	s := initFlagsSource(priority, prefix, os.Args)
 
-	return &FlagsSource{
+	return &s
+}
+
+// initFlagsSource
+func initFlagsSource(priority int, prefix string, args []string) FlagsSource {
+	return FlagsSource{
 		id:       fmt.Sprintf("flags-%s", uuid.NewString()),
 		data:     make(map[string]conf.Config),
 		priority: priority,
 		prefix:   prefix,
-		logger:   *logger,
+		args:     args,
 	}
 }
 
 // Close.
-func (s *FlagsSource) Close(ctx context.Context) {
-}
+func (s *FlagsSource) Close(ctx context.Context) {}
 
 // ID.
 func (s *FlagsSource) ID() string {
@@ -62,41 +64,13 @@ func (s *FlagsSource) ServiceConfig(serviceName string) (conf.Config, error) {
 
 // Load loads configuration data from flags passed at args.
 func (s *FlagsSource) Load(ctx context.Context, services []string) (err error) {
-	s.logger.Debug().Interface("services", services).Interface("args", os.Args).Send()
-
 	const (
-		delimiter     = "-"
-		assignment    = "="
-		splittedCount = 2
+		delimiter  = "-"
+		assignment = "="
 	)
 
-	var svcPrefix string
-	for _, svc := range services {
-		svcPrefix = fmt.Sprintf("%s%s%s", s.prefix, svc, delimiter)
-		s.logger.Debug().Str("service prefix", svcPrefix).Send()
-
-		svcConfig := conf.MapConfig{}
-
-		for _, arg := range os.Args[1:] {
-			if !strings.HasPrefix(arg, svcPrefix) {
-				continue
-			}
-
-			keyVal := strings.Replace(arg, svcPrefix, "", 1)
-			splitted := strings.SplitN(keyVal, assignment, splittedCount)
-
-			s.logger.Debug().Interface("splitted", splitted).Send()
-
-			// yet ignoring bool flags
-			if len(splitted) < splittedCount {
-				continue
-			}
-
-			key := toCamelCase(splitted[0], delimiter)
-			svcConfig[key] = splitted[1]
-		}
-
-		s.data[svc] = svcConfig
+	for _, svc := range uniqueStrings(services) {
+		s.data[svc] = conf.NewMapConfig(sieveServiceConfig(svc, s.prefix, delimiter, assignment, s.args))
 	}
 
 	return err

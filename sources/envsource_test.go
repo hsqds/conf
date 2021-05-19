@@ -52,16 +52,16 @@ func TestEnvSource(t *testing.T) {
 				"service3_key1=val31",
 				"service3_key2=val32",
 			}
-			exp = conf.MapConfig{
+			exp = conf.NewMapConfig(map[string]string{
 				"keyNum1": "val11",
 				"key2":    "VAL12",
 				"key3":    "val13",
 				"key4":    "val14",
-			}
-			svc2Exp = conf.MapConfig{
+			})
+			svc2Exp = conf.NewMapConfig(map[string]string{
 				"key1": "val21",
 				"key2": "val22",
-			}
+			})
 		)
 
 		t.Run("ServiceConfig should return correct config", func(t *testing.T) {
