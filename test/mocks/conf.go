@@ -257,19 +257,19 @@ func (m *MockConfigStorage) EXPECT() *MockConfigStorageMockRecorder {
 	return m.recorder
 }
 
-// Get mocks base method.
-func (m *MockConfigStorage) Get(arg0 string) (conf.Config, error) {
+// ByServiceName mocks base method.
+func (m *MockConfigStorage) ByServiceName(arg0 string) (conf.Config, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", arg0)
+	ret := m.ctrl.Call(m, "ByServiceName", arg0)
 	ret0, _ := ret[0].(conf.Config)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Get indicates an expected call of Get.
-func (mr *MockConfigStorageMockRecorder) Get(arg0 interface{}) *gomock.Call {
+// ByServiceName indicates an expected call of ByServiceName.
+func (mr *MockConfigStorageMockRecorder) ByServiceName(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockConfigStorage)(nil).Get), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ByServiceName", reflect.TypeOf((*MockConfigStorage)(nil).ByServiceName), arg0)
 }
 
 // Set mocks base method.

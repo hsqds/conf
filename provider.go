@@ -3,8 +3,6 @@ package conf
 import (
 	"context"
 	"fmt"
-
-	"github.com/rs/zerolog"
 )
 
 // Option represents provision options
@@ -19,33 +17,30 @@ type ConfigProvider struct {
 	sources SourcesStorage
 	configs ConfigsStorage
 	loader  Loader
-	logger  zerolog.Logger
 }
 
 // NewDefaultConfigProvider.
-func NewDefaultConfigProvider(logger *zerolog.Logger) *ConfigProvider {
+func NewDefaultConfigProvider() *ConfigProvider {
 	return NewConfigProvider(
 		NewSyncedSourcesStorage(),
 		NewSyncedConfigsStorage(),
-		NewConfigsLoader(logger),
-		logger,
+		new(ConfigsLoader),
 	)
 }
 
 // NewConfigProvider.
 func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStorage,
-	loader Loader, logger *zerolog.Logger) *ConfigProvider {
+	loader Loader) *ConfigProvider {
 	return &ConfigProvider{
 		sources: sourcesStorage,
 		configs: configsStorage,
 		loader:  loader,
-		logger:  *logger,
 	}
 }
 
 // ServiceConfig provide service config from inner cache.
 func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Config, error) {
-	cfg, err := p.configs.Get(serviceName)
+	cfg, err := p.configs.ByServiceName(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("could not get service config: %w", err)
 	}
@@ -83,7 +78,6 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) (loadErro
 	results := p.loader.Load(ctx, p.sources.List(), services)
 	for i := range results {
 		result := results[i]
-		p.logger.Debug().Interface("result", result)
 
 		if result.Err != nil {
 			loadErrors = append(loadErrors, result.Err.(LoadError))
@@ -106,8 +100,6 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) (loadErro
 	}
 
 	for svcName, cfgP := range tmpConfigs {
-		p.logger.Debug().Str("service name", svcName).Interface("config", cfgP.cfg).Msg("updating config cache")
-
 		err := p.configs.Set(svcName, cfgP.cfg)
 		if err != nil {
 			loadErrors = append(loadErrors, LoadError{

@@ -48,9 +48,8 @@ fallback config `defaults.json`
 
 first we need to create config provider
 
-provider uses zerolog logger
 ```go
-cp := conf.NewDefaultConfigProvider(&logger)
+cp := conf.NewDefaultConfigProvider()
 defer cp.Close(ctx)
 ```
 
@@ -58,8 +57,8 @@ then add some sources
 ```go
 cp.AddSource(
     // `config.json` has higher priority than `defaults.json`
-    sources.NewJSONFileSource(100, "config.json", &logger),
-    sources.NewJSONFileSource(90, "defaults.json", &logger),
+    sources.NewJSONFileSource(100, "config.json"),
+    sources.NewJSONFileSource(90, "defaults.json"),
 )
 ```
 

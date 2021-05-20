@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-// SourceSetter.
+// SourceStorage
 type SourcesStorage interface {
 	Append(src Source) error
 	ByID(sourceID string) (Source, error)
@@ -14,7 +14,7 @@ type SourcesStorage interface {
 
 // Source.
 type Source interface {
-	// Shoud return unique source identifier persistent for in all source lifetime
+	// Should return unique source identifier persistent for in all source lifetime
 	ID() string
 	// Load pull config for the list of service
 	Load(ctx context.Context, serviceNames []string) error
@@ -32,14 +32,14 @@ type SyncedSourcesStorage struct {
 	sources map[string]Source
 }
 
-// newSyncedSources.
+// NewSyncedSourcesStorage
 func NewSyncedSourcesStorage() *SyncedSourcesStorage {
 	return &SyncedSourcesStorage{
 		sources: make(map[string]Source),
 	}
 }
 
-// Set.
+// Append
 func (s *SyncedSourcesStorage) Append(src Source) error {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
@@ -68,7 +68,7 @@ func (s *SyncedSourcesStorage) List() []Source {
 	return lst
 }
 
-// Get.
+// ByID gets source by it's ID
 func (s *SyncedSourcesStorage) ByID(sourceID string) (Source, error) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()

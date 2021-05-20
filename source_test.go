@@ -1,80 +1,110 @@
 package conf_test
 
 import (
+	"testing"
+
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Source", func() {
-	var (
-		storage        *conf.SyncedSourcesStorage
-		mockController *gomock.Controller
-		mockSrc        *mocks.MockSource
+// TestSyncedSourcesStorage
+func TestSyncedSourcesStorage(t *testing.T) {
+	t.Parallel()
 
+	var (
 		srcID = "test-source-id"
+
+		newMockSource = func() (*mocks.MockSource, func()) {
+			ctrl := gomock.NewController(t)
+			srcMock := mocks.NewMockSource(ctrl)
+
+			cleanup := func() {
+				ctrl.Finish()
+			}
+
+			return srcMock, cleanup
+		}
 	)
 
-	BeforeEach(func() {
-		mockController = gomock.NewController(GinkgoT())
-		storage = conf.NewSyncedSourcesStorage()
-		mockSrc = mocks.NewMockSource(mockController)
+	t.Run("should append source to storage", func(t *testing.T) {
+		t.Parallel()
+
+		storage := conf.NewSyncedSourcesStorage()
+		srcMock, cleanup := newMockSource()
+		defer cleanup()
+
+		srcMock.EXPECT().ID().Return(srcID).Times(1)
+
+		err := storage.Append(srcMock)
+		assert.Nil(t, err)
 	})
 
-	AfterEach(func() {
-		mockController.Finish()
+	t.Run("should return error if source is already in the storage", func(t *testing.T) {
+		t.Parallel()
+
+		storage := conf.NewSyncedSourcesStorage()
+		srcMock, cleanup := newMockSource()
+		defer cleanup()
+
+		srcMock.EXPECT().ID().Return(srcID).Times(2)
+		err := storage.Append(srcMock)
+		assert.Nil(t, err)
+
+		err = storage.Append(srcMock)
+		assert.IsType(t, err, conf.SourceUniquenessError{})
 	})
 
-	Describe("Append,Get,List", func() {
-		It("should append source to storage", func() {
-			mockSrc.EXPECT().ID().Return(srcID).Times(1)
+	t.Run("should return source by id", func(t *testing.T) {
+		t.Parallel()
 
-			err := storage.Append(mockSrc)
-			Expect(err).To(BeNil())
-		})
+		storage := conf.NewSyncedSourcesStorage()
+		srcMock, cleanup := newMockSource()
+		defer cleanup()
 
-		It("should return error if source is already in storage", func() {
-			mockSrc.EXPECT().ID().Return(srcID).Times(2)
+		srcMock.EXPECT().ID().Return(srcID).Times(1)
+		err := storage.Append(srcMock)
+		assert.Nil(t, err)
 
-			err := storage.Append(mockSrc)
-			Expect(err).To(BeNil())
-			err = storage.Append(mockSrc)
-			Expect(err).NotTo(BeNil())
-		})
-
-		It("should return source by id", func() {
-			mockSrc.EXPECT().ID().Return(srcID).Times(1)
-			err := storage.Append(mockSrc)
-			Expect(err).To(BeNil())
-
-			src, err := storage.ByID(srcID)
-			Expect(err).To(BeNil())
-			Expect(src).To(Equal(mockSrc))
-		})
-
-		It("should return error when source not found by id", func() {
-			_, err := storage.ByID(srcID)
-			Expect(err).NotTo(BeNil())
-		})
-
-		It("should return sources list", func() {
-			var (
-				srcID2   = "test-source-id-2"
-				mockSrc2 = mocks.NewMockSource(mockController)
-			)
-
-			mockSrc.EXPECT().ID().Return(srcID).Times(1)
-			mockSrc2.EXPECT().ID().Return(srcID2).Times(1)
-
-			err := storage.Append(mockSrc)
-			Expect(err).To(BeNil())
-			err = storage.Append(mockSrc2)
-			Expect(err).To(BeNil())
-
-			lst := storage.List()
-			Expect(len(lst)).To(Equal(2))
-		})
+		src, err := storage.ByID(srcID)
+		assert.Nil(t, err)
+		assert.Equal(t, srcMock, src)
 	})
-})
+
+	t.Run("should return error when source not found by id", func(t *testing.T) {
+		t.Parallel()
+
+		storage := conf.NewSyncedSourcesStorage()
+
+		_, err := storage.ByID(srcID)
+		assert.IsType(t, conf.SourceStorageError{}, err)
+	})
+
+	t.Run("should return sources list", func(t *testing.T) {
+		t.Parallel()
+
+		var (
+			srcID2  = "test-source-id-2"
+			storage = conf.NewSyncedSourcesStorage()
+		)
+
+		srcMock, cleanup := newMockSource()
+		defer cleanup()
+
+		srcMock2, cleanup2 := newMockSource()
+		defer cleanup2()
+
+		srcMock.EXPECT().ID().Return(srcID).Times(1)
+		srcMock2.EXPECT().ID().Return(srcID2).Times(1)
+
+		err := storage.Append(srcMock)
+		assert.Nil(t, err)
+		err = storage.Append(srcMock2)
+		assert.Nil(t, err)
+
+		lst := storage.List()
+		assert.Equal(t, []conf.Source{srcMock, srcMock2}, lst)
+	})
+}

@@ -6,7 +6,7 @@ import (
 
 // ConfigsStorage.
 type ConfigsStorage interface {
-	Get(serviceName string) (Config, error)
+	ByServiceName(serviceName string) (Config, error)
 	Set(serviceName string, cfg Config) error
 }
 
@@ -33,7 +33,7 @@ func (c *SyncedConfigsStorage) Set(serviceName string, cfg Config) error {
 }
 
 // Get receives configs by service name.
-func (c *SyncedConfigsStorage) Get(serviceName string) (Config, error) {
+func (c *SyncedConfigsStorage) ByServiceName(serviceName string) (Config, error) {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 

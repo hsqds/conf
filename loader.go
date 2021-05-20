@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-
-	"github.com/rs/zerolog"
 )
 
 // LoadResult represents.
@@ -39,22 +37,11 @@ type Loader interface {
 }
 
 // Loader represents.
-type ConfigsLoader struct {
-	logger zerolog.Logger
-}
-
-// NewConfigsLoader.
-func NewConfigsLoader(logger *zerolog.Logger) *ConfigsLoader {
-	*logger = logger.With().Str("component", "conf.loader").Logger().Level(zerolog.DebugLevel)
-
-	return &ConfigsLoader{*logger}
-}
+type ConfigsLoader int
 
 // load call source loading.
-func (cl *ConfigsLoader) load(ctx context.Context, src Source,
-	services []string, resultsCh chan<- LoadResult, wg *sync.WaitGroup) {
-	cl.logger.Debug().Msg("start loading routine")
-
+func (cl *ConfigsLoader) load(ctx context.Context, src Source, services []string, resultsCh chan<- LoadResult,
+	wg *sync.WaitGroup) {
 	defer src.Close(ctx)
 
 	defer wg.Done()
@@ -62,8 +49,6 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source,
 	result := LoadResult{
 		SourceID: src.ID(),
 	}
-
-	cl.logger.Debug().Msg("Start loading from source")
 
 	err := src.Load(ctx, services)
 	if err != nil {
@@ -78,8 +63,6 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source,
 	}
 
 	for _, svc := range services {
-		cl.logger.Debug().Str("service", svc).Msg("getting service config")
-
 		cfg, err := src.ServiceConfig(svc)
 		if err != nil {
 			result.Err = LoadError{
@@ -110,22 +93,17 @@ func (cl *ConfigsLoader) Load(ctx context.Context, sources []Source, serviceName
 
 	wg := sync.WaitGroup{}
 	wg.Add(srcCount)
-	cl.logger.Debug().Int("src count", srcCount).Msg("wait group value")
 
 	for _, src := range sources {
 		go cl.load(ctx, src, serviceNames, resultsCh, &wg)
 	}
 
-	cl.logger.Debug().Msg("waiting fo wg")
 	wg.Wait()
-	cl.logger.Debug().Msg("closing results channel")
 	close(resultsCh) // after wg.Wait, so it is ok
 
 	for res := range resultsCh {
 		results = append(results, res)
 	}
-
-	cl.logger.Debug().Interface("results list", results).Send()
 
 	return results
 }
