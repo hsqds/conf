@@ -9,9 +9,10 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/sources"
-	"github.com/stretchr/testify/assert"
 )
 
 // TestJSONSource

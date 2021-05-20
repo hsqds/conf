@@ -3,8 +3,9 @@ package conf_test
 import (
 	"testing"
 
-	"github.com/hsqds/conf"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/hsqds/conf"
 )
 
 // TestStoragesErrors

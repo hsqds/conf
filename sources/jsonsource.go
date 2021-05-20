@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/google/uuid"
+
 	"github.com/hsqds/conf"
 )
 
