@@ -49,13 +49,13 @@ var _ = Describe("Source", func() {
 			err := storage.Append(mockSrc)
 			Expect(err).To(BeNil())
 
-			src, err := storage.Get(srcID)
+			src, err := storage.ByID(srcID)
 			Expect(err).To(BeNil())
 			Expect(src).To(Equal(mockSrc))
 		})
 
 		It("should return error when source not found by id", func() {
-			_, err := storage.Get(srcID)
+			_, err := storage.ByID(srcID)
 			Expect(err).NotTo(BeNil())
 		})
 

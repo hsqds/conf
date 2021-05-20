@@ -8,7 +8,7 @@ import (
 // SourceSetter.
 type SourcesStorage interface {
 	Append(src Source) error
-	Get(sourceID string) (Source, error)
+	ByID(sourceID string) (Source, error)
 	List() []Source
 }
 
@@ -69,7 +69,7 @@ func (s *SyncedSourcesStorage) List() []Source {
 }
 
 // Get.
-func (s *SyncedSourcesStorage) Get(sourceID string) (Source, error) {
+func (s *SyncedSourcesStorage) ByID(sourceID string) (Source, error) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 

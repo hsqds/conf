@@ -69,8 +69,8 @@ func (p *ConfigProvider) AddSource(src Source) error {
 	return nil
 }
 
-// Load updates services config in cache.
-func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
+// Load updates inner services config cache.
+func (p *ConfigProvider) Load(ctx context.Context, services ...string) (loadErrors []LoadError) {
 	type configPriority struct {
 		cfg Config
 		prt int // priority
@@ -86,19 +86,16 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 		p.logger.Debug().Interface("result", result)
 
 		if result.Err != nil {
-			p.logger.Warn().Err(result.Err).Send()
+			loadErrors = append(loadErrors, result.Err.(LoadError))
 
 			continue
 		}
 
-		src, err := p.sources.Get(result.SourceID)
-		if err != nil {
-			err = fmt.Errorf("could not get source by id (%q): %w", result.SourceID, err)
-			p.logger.Error().Err(err).Send()
-		}
+		priority = result.Priority
 
-		priority = src.Priority()
-
+		// TODO: move this logic to []LoadResult
+		// Getting set configs. Each config is most prioritized
+		// for it's service
 		cfgP, ok := tmpConfigs[result.Service]
 		if !ok || priority > cfgP.prt {
 			tmpConfigs[result.Service] = configPriority{
@@ -113,11 +110,17 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) error {
 
 		err := p.configs.Set(svcName, cfgP.cfg)
 		if err != nil {
-			return fmt.Errorf("could not update configs storage: %w", err)
+			loadErrors = append(loadErrors, LoadError{
+				Service:  svcName,
+				SourceID: "",
+				Err:      fmt.Errorf("could not update configs storage: %w", err),
+			})
+
+			continue
 		}
 	}
 
-	return nil
+	return loadErrors
 }
 
 // Close.

@@ -3,7 +3,7 @@ lint:
 
 .PHONY: test
 test:
-	go test -race -cover -coverprofile=coverage.txt -outputdir=./test ./...
+	go test -race -cover -coverprofile=coverage.out -outputdir=./test ./...
 
 gen-mocks:
 	mockgen \
@@ -13,6 +13,9 @@ gen-mocks:
 	ConfigsStorage=MockConfigStorage,Loader=MockLoader,Config=MockConfig \
 	github.com/hsqds/conf \
 	Source,SourcesStorage,Config,ConfigsStorage,Loader
+
+coverage:
+	go tool cover -html=./test/coverage.out
 
 install-tools:
 	go get github.com/golangci/golangci-lint 

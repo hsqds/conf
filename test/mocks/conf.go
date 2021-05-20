@@ -141,19 +141,19 @@ func (mr *MockSourcesStorageMockRecorder) Append(arg0 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Append", reflect.TypeOf((*MockSourcesStorage)(nil).Append), arg0)
 }
 
-// Get mocks base method.
-func (m *MockSourcesStorage) Get(arg0 string) (conf.Source, error) {
+// ByID mocks base method.
+func (m *MockSourcesStorage) ByID(arg0 string) (conf.Source, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", arg0)
+	ret := m.ctrl.Call(m, "ByID", arg0)
 	ret0, _ := ret[0].(conf.Source)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Get indicates an expected call of Get.
-func (mr *MockSourcesStorageMockRecorder) Get(arg0 interface{}) *gomock.Call {
+// ByID indicates an expected call of ByID.
+func (mr *MockSourcesStorageMockRecorder) ByID(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockSourcesStorage)(nil).Get), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ByID", reflect.TypeOf((*MockSourcesStorage)(nil).ByID), arg0)
 }
 
 // List mocks base method.

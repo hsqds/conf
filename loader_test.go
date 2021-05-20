@@ -8,7 +8,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/hsqds/conf"
 	"github.com/hsqds/conf/test/mocks"
-	"github.com/hsqds/conf/test/stubs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/rs/zerolog/log"
@@ -38,14 +37,14 @@ var _ = Describe("Loader", func() {
 
 	Describe("Load", func() {
 		It("should load config", func() {
-			cfg := stubs.NewTestConfig()
+			cfg := conf.NewMapConfig(map[string]string{})
 			configsCount := 3
 			srcID := fmt.Sprint(1)
 			services := []string{svc1, svc2, svc3}
 
 			src.EXPECT().ID().Return(srcID).Times(2)
 			src.EXPECT().Load(gomock.Any(), services).Return(nil).Times(1)
-			src.EXPECT().ServiceConfig(gomock.Any()).Return(conf.Config(&cfg), nil).Times(len(services))
+			src.EXPECT().ServiceConfig(gomock.Any()).Return(conf.Config(cfg), nil).Times(len(services))
 			src.EXPECT().Close(gomock.Any()).Times(1)
 
 			mockSources = []conf.Source{
@@ -55,9 +54,9 @@ var _ = Describe("Loader", func() {
 			res := loader.Load(context.Background(), mockSources, services)
 			Expect(len(res)).Should(Equal(configsCount))
 			Expect(res).Should(Equal([]conf.LoadResult{
-				{SourceID: srcID, Config: &cfg, Err: nil, Service: svc1},
-				{SourceID: srcID, Config: &cfg, Err: nil, Service: svc2},
-				{SourceID: srcID, Config: &cfg, Err: nil, Service: svc3},
+				{SourceID: srcID, Config: cfg, Err: nil, Service: svc1},
+				{SourceID: srcID, Config: cfg, Err: nil, Service: svc2},
+				{SourceID: srcID, Config: cfg, Err: nil, Service: svc3},
 			}))
 		})
 

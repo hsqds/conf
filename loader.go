@@ -2,22 +2,12 @@ package conf
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"sync"
-	"time"
 
 	"github.com/rs/zerolog"
 )
-
-const (
-	defaultLoadTimeout = 3000
-)
-
-// TODO: golang.org/x/sync/errgroup
-
-// Loader.
-type Loader interface {
-	Load(ctx context.Context, sources []Source, serviceNames []string) []LoadResult
-}
 
 // LoadResult represents.
 type LoadResult struct {
@@ -25,6 +15,27 @@ type LoadResult struct {
 	Config   Config
 	Err      error
 	Service  string
+	Priority int
+}
+
+// LoadError represents
+type LoadError struct {
+	SourceID string
+	Service  string
+	Err      error
+}
+
+// Error
+func (e LoadError) Error() string {
+	return fmt.Sprintf(
+		"could not load service (%q) config from source (%q): %s",
+		e.Service, e.SourceID, e.Err,
+	)
+}
+
+// Loader.
+type Loader interface {
+	Load(ctx context.Context, sources []Source, serviceNames []string) []LoadResult
 }
 
 // Loader represents.
@@ -56,7 +67,11 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source,
 
 	err := src.Load(ctx, services)
 	if err != nil {
-		result.Err = err
+		result.Err = LoadError{
+			Service:  strings.Join(services, ", "),
+			SourceID: src.ID(),
+			Err:      err,
+		}
 		resultsCh <- result
 
 		return
@@ -67,7 +82,11 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source,
 
 		cfg, err := src.ServiceConfig(svc)
 		if err != nil {
-			result.Err = err
+			result.Err = LoadError{
+				Service:  svc,
+				SourceID: src.ID(),
+				Err:      err,
+			}
 			result.Service = svc
 			resultsCh <- result
 
@@ -76,28 +95,18 @@ func (cl *ConfigsLoader) load(ctx context.Context, src Source,
 
 		result.Config = cfg
 		result.Service = svc
+		result.Priority = src.Priority()
 		resultsCh <- result
 	}
 }
 
 // Load loads configs from each source in parallel
-// !IMPORTANT: context with timeout wanted here!
 func (cl *ConfigsLoader) Load(ctx context.Context, sources []Source, serviceNames []string) []LoadResult {
 	var (
 		srcCount  = len(sources)
 		resultsCh = make(chan LoadResult, srcCount*len(serviceNames))
 		results   = make([]LoadResult, 0, srcCount)
-		cancel    func()
 	)
-
-	// if no deadline is set create context with default timeout value
-	_, ok := ctx.Deadline()
-	if !ok {
-		cl.logger.Debug().Msg("context has no deadline. will set default timeout")
-
-		ctx, cancel = context.WithTimeout(ctx, defaultLoadTimeout*time.Millisecond)
-		defer cancel()
-	}
 
 	wg := sync.WaitGroup{}
 	wg.Add(srcCount)
