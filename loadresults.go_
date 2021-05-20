@@ -1,0 +1,128 @@
+package conf
+
+import (
+	"errors"
+	"fmt"
+	"sync"
+)
+
+
+// resultsList represents
+type resultsList struct {
+	lst []LoadResult
+	mtx sync.Mutex
+	len int
+}
+
+// append adds new result to the end of the results list and returns it's index
+func (rl *resultsList) Append(r LoadResult) int {
+	rl.mtx.Lock()
+	defer rl.mtx.Unlock()
+
+	rl.lst = append(rl.lst, r)
+	rl.len++
+
+	return rl.len - 1
+}
+
+// byIndex returns result by index or error
+func (rl *resultsList) ByIndex(i int) (res LoadResult, err error) {
+	rl.mtx.Lock()
+	defer rl.mtx.Unlock()
+
+	if i > rl.len-1 {
+		return res, errors.New("no such index")
+	}
+
+	res = rl.lst[i]
+
+	return res, err
+}
+
+// clean
+func (rl *resultsList) Clean() {
+	rl.mtx.Lock()
+	defer rl.mtx.Unlock()
+
+	rl.lst = []LoadResult{}
+	rl.len = 0
+}
+
+// index represents concurrency safe index
+type attrIndex struct {
+	mtx sync.Mutex
+	idx map[string][]int
+}
+
+// InitIndex
+func InitAttrIndex() attrIndex {
+	return attrIndex{
+		idx: make(map[string][]int),
+	}
+}
+
+// sortAppend appends `resultIndex` to list respecting it's priority
+// `0` element of the list always contain `resultIndex` with highest priority
+func (i *attrIndex) sortAppend(lst []int, resultIndex, priority int) []int {
+	// 
+	if len(lst) == 0 {
+		return append(lst, resultIndex)
+	}
+
+	for _, elIdx := range lst {
+		el := i.results.ByIndex(elIdx)
+		if priority >= el.
+	}
+
+	return lst
+}
+
+// Add 
+func (i *attrIndex) Add(attr string, resultIndex, priority int) error {
+	i.mtx.Lock()
+	defer i.mtx.Unlock()
+
+	lst, ok := i.idx[attr]
+	if !ok {
+		lst = []int{}
+	}
+
+	i.idx[attr] = i.sortAppend(lst, resultIndex, priority)
+
+	return 
+}
+
+//
+type LoadResultsIndexedCollection struct {
+	results    resultsList
+	sourcesIdx attrIndex
+}
+
+// NewLoadResultsIndexedCollection
+func NewLoadResultsIndexedCollection() *LoadResultsIndexedCollection {
+	return &LoadResultsIndexedCollection{
+		results:    resultsList{},
+		sourcesIdx: InitIndex(),
+	}
+}
+
+// Append
+func (c *LoadResultsIndexedCollection) Append(r LoadResult) {
+	i := c.results.Append(r)
+	c.index(i)
+}
+
+// index
+func (c *LoadResultsIndexedCollection) index(resultIndex int) error {
+	r, err := c.results.ByIndex(resultIndex)
+	if err != nil {
+		return fmt.Errorf("could not find result by index (%d): %w", resultIndex, err)
+	}
+
+	c.sourcesIdx.
+}
+
+// MostPrioritized
+func (c *LoadResultsIndexedCollection) MostPrioritized(serviceName string) error {
+	return
+}
