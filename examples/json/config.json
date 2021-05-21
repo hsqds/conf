@@ -1,0 +1,12 @@
+{
+    "serviceName1": {
+        "key11": "value11",
+        "key12": "value12",
+        "host": "host-name.io",
+        "port": "8000"
+    },
+    "serviceName2": {
+        "key21": "value21",
+        "key22": "value22"
+    }
+}

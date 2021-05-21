@@ -1,0 +1,11 @@
+go run ./main.go \
+--serviceName1-key11=val11 \
+--serviceName1-key12=val12 \
+--serviceName1-host=domain-name.io \
+--serviceName1-port=9000 \
+--serviceName2-key21=val21 \
+--serviceName2-key22=val22 \
+--serviceName2-list=v1,v2,v3,v4 \
+--serviceName2-map=k1=v1,k2=v2,k3=v3 \
+--serviceName2-bool \
+--serviceName2-multi-part=some-value

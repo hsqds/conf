@@ -88,5 +88,5 @@ processErr(err)
 ```
 
 ## ROADMAD:
-* v0.1 - jsonfile source, env source, flags source, full test coverage
-* v0.2 - ability to subscribe for source updates
+* v0.2 - optional merge service configs from various sources
+* v0.3 - ability to subscribe for source updates

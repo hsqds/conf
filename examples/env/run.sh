@@ -1,0 +1,9 @@
+export SERVICENAME1_KEY11=val11
+export SERVICENAME1_KEY12=val12
+export SERVICENAME1_HOST=hostname.io
+export SERVICENAME1_PORT=8080
+export SERVICENAME2_KEY21=val21
+export SERVICENAME2_KEY21=val22
+export SERVICENAME2_MULTI_PART=mutipart
+
+go run ./main.go
