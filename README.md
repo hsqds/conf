@@ -1,92 +1,57 @@
 # conf
-!WARNING: WIP
-"just for fun" pet-project, not recommended for production use
+WARNING! just for fun pet-project, not recommend for production use
 
-## main idea
-application may run many services, like grpc, http or by messaging over queues.
-`conf` let the user to retrieve services configs from different sources.
+`conf` simplify loading of application settings from different source. 
+It may be specialized service like consul or etcd or simple json file, cli flags and environment variables.
 
-`conf` is abstraction 
-`instantiaite provider -> add sources -> load config data -> use config data`
+## Table of contents
+ * [General info](#general-info)
+ * [Sources](#sources)
+ * [Dependencies](#dependencies)
+ * [Requirements](#requirements)
+ * [Setup](#setup)
+ * [Examples](#examples)
+ * [Roadmap](#roadmap)
 
-## sources
-each source has priority
-each source may provide configs for many services
+## General info
+While you develop, debug or testing your application, you may need to redeclare some of the settings, like database connection parameters, or some domain logic options. `conf` let you organize application configuration process flexible. 
 
-### included sources
+### How does it work
+Application config represented as a set of services configs provided or used by application. First you need
+to instantiate `conf.Provider` then add some sources like json-file, environment variables of cli flags. 
+When sources added you should `Load` configs you need. `conf.Provider` will try to load services configs
+from each source you've added concurrently. Then you may take service config calling `ServiceConfig` method.
+You will get service config loaded from most prioritized source.
+
+See [usage example](./examples/alltogether/main.go).
+
+
+#### Sources
+ * each source has priority
+ * each source may provide configs for many services
+
+`conf` includes components to load data from 3 source types:
  * environment variables
  * command line flags
  * json files
 
-#### json files
+### How to use 
+`instantiaite provider -> add sources -> load config data -> use config data`
 
-let's try to load configuration from json file
+You may see detailed [example](./examples/alltogether/main.go)
 
-example config `config.json`
-```json
-{
-    "http": {
-        "host": "0.0.0.0",
-        "port": "8080"
-    },
-}
-```
+## Dependencies
+`conf` has only one third-party dependency
+ * github.com/google/uuid
 
-fallback config `defaults.json`
-```json
-{
-    "http": {
-        "host": "",
-        "port": "8000"
-    },
-    "grpc": {
-        "host": "auth.svc",
-        "port": "3000"
-    }
-}
-```
+## Requirements
+go version >= 1.16
 
-first we need to create config provider
+## Setup
+`go get github.com/hsqds/conf`
 
-```go
-cp := conf.NewDefaultConfigProvider()
-defer cp.Close(ctx)
-```
-
-then add some sources
-```go
-cp.AddSource(
-    // `config.json` has higher priority than `defaults.json`
-    sources.NewJSONFileSource(100, "config.json"),
-    sources.NewJSONFileSource(90, "defaults.json"),
-)
-```
-
-then load data from sources and get needed service config
-```go
-err := cp.Load(context.Background(), "http", "grpc")
-processErr(err)
-// `config.json` data will override `dafaults.json` respecting the priority
-httpConfig, err := cp.ServiceConfig("http")
-processErr(err)
-// grpc config will be loaded from `defaults.json`
-grpcConfig, err := cp.ServiceConfig("grpc")
-processErr(err)
-```
-
-now we may get config parameter using config `Get` method
-```go
-value, ok := httpConfig.Get("host", "default.svc") // "0.0.0.0", true - from `configs.json`
-value, ok := grpcConfig.Get("host", "default.svc") // "auth.svc", true - from `defaults.json`
-value, ok := grpcConfig.Get("inexistingKey", "default.value") // "default.value", false - defaultValue
-```
-
-or format config parameters calling `Fmt` method
-```go
-formatted, err := httpConfig.Fmt("{{.host}}:{{.port}}") // "0.0.0.0:8080"
-processErr(err)
-```
-
-## ROADMAD:
-* v0.2 - optional merge service configs from various sources
+## ROADMAD
+* v0.2:
+  * optional merge service configs from various sources
+  * dotenv source
 * v0.3 - ability to subscribe for source updates

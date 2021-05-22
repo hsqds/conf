@@ -86,15 +86,14 @@ func TestSyncedSourcesStorage(t *testing.T) {
 		t.Parallel()
 
 		var (
-			srcID2  = "test-source-id-2"
-			storage = conf.NewSyncedSourcesStorage()
+			srcID2   = "test-source-id-2"
+			storage  = conf.NewSyncedSourcesStorage()
+			ctrl     = gomock.NewController(t)
+			srcMock  = mocks.NewMockSource(ctrl)
+			srcMock2 = mocks.NewMockSource(ctrl)
 		)
 
-		srcMock, cleanup := newMockSource()
-		defer cleanup()
-
-		srcMock2, cleanup2 := newMockSource()
-		defer cleanup2()
+		defer ctrl.Finish()
 
 		srcMock.EXPECT().ID().Return(srcID).Times(1)
 		srcMock2.EXPECT().ID().Return(srcID2).Times(1)
