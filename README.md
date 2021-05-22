@@ -4,6 +4,9 @@ WARNING! just for fun pet-project, not recommend for production use
 `conf` simplify loading of application settings from different source. 
 It may be specialized service like consul or etcd or simple json file, cli flags and environment variables.
 
+![linter](https://github.com/hsqds/conf/actions/workflows/golangci.yml/badge.svg)
+![tests](https://github.com/hsqds/conf/actions/workflows/testing.yml/badge.svg)
+
 ## Table of contents
  * [General info](#general-info)
  * [Sources](#sources)
