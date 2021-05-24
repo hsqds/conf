@@ -1,6 +1,7 @@
 package conf_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -39,5 +40,31 @@ func TestStoragesErrors(t *testing.T) {
 		e := conf.SourceStorageError{sourceID}
 
 		assert.Contains(t, e.Error(), sourceID)
+	})
+
+	t.Run("LoadError", func(t *testing.T) {
+		t.Parallel()
+
+		const (
+			sourceID = "sourceid"
+			service  = "serviceName"
+		)
+
+		err := errors.New("inner error")
+
+		t.Run("Error", func(t *testing.T) {
+			t.Parallel()
+
+			e := conf.LoadError{
+				SourceID: sourceID,
+				Service:  service,
+				Err:      err,
+			}
+
+			assert.Contains(t, e.Error(), sourceID)
+			assert.Contains(t, e.Error(), service)
+
+			assert.Equal(t, err, e.Unwrap())
+		})
 	})
 }

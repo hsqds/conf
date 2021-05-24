@@ -29,3 +29,23 @@ type SourceStorageError struct {
 func (e SourceStorageError) Error() string {
 	return fmt.Sprintf("source storage has no source %q", e.SourceID)
 }
+
+// LoadError represents
+type LoadError struct {
+	SourceID string
+	Service  string
+	Err      error
+}
+
+// Error
+func (e LoadError) Error() string {
+	return fmt.Sprintf(
+		"could not load service (%q) config from source (%q): %s",
+		e.Service, e.SourceID, e.Err,
+	)
+}
+
+// Unwrap
+func (e LoadError) Unwrap() error {
+	return e.Err
+}

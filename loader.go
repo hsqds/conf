@@ -2,7 +2,6 @@ package conf
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"sync"
 )
@@ -14,21 +13,6 @@ type LoadResult struct {
 	Err      error
 	Service  string
 	Priority int
-}
-
-// LoadError represents
-type LoadError struct {
-	SourceID string
-	Service  string
-	Err      error
-}
-
-// Error
-func (e LoadError) Error() string {
-	return fmt.Sprintf(
-		"could not load service (%q) config from source (%q): %s",
-		e.Service, e.SourceID, e.Err,
-	)
 }
 
 // Loader.
