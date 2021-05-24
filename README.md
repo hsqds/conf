@@ -13,7 +13,6 @@ It may be specialized service like consul or etcd or simple json file, cli flags
  * [Dependencies](#dependencies)
  * [Requirements](#requirements)
  * [Setup](#setup)
- * [Examples](#examples)
  * [Roadmap](#roadmap)
 
 ## General info
@@ -53,8 +52,9 @@ go version >= 1.16
 ## Setup
 `go get github.com/hsqds/conf`
 
-## ROADMAD
+## ROADMAP
 * v0.2:
   * optional merge service configs from various sources
   * dotenv source
-* v0.3 - ability to subscribe for source updates
+* v0.3:
+  * ability to subscribe for source updates
