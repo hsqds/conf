@@ -51,7 +51,7 @@ func main() {
 	)
 
 	// adding flags source is simple
-	// just pass priority and prefix (yeah, double dashes ;))
+	// just pass priority and prefix
 	p.AddSource(sources.NewFlagsSource(flagsPriority, "--"))
 
 	// now lets add json source
@@ -110,7 +110,7 @@ func main() {
 	httpListen, err := httpConfig.Fmt("{{.hostname}}:{{.port}}")
 	// err may be critical here
 	_ = err
-	// If default settings were not overriden by json or flags, we'll got
+	// If default settings were not overriden by json or flags, we'll get
 	// `httpListen == "hostname:80"``
 	_ = httpListen
 }
