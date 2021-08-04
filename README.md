@@ -53,7 +53,7 @@ go version >= 1.16
 ## Setup
 `go get github.com/hsqds/conf`
 
-## ROADMAD
+## ROADMAP
 * v0.2:
   * optional merge service configs from various sources
   * dotenv source
