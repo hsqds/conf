@@ -6,15 +6,6 @@ import (
 	"sync"
 )
 
-// LoadResult represents.
-type LoadResult struct {
-	SourceID string
-	Config   Config
-	Err      error
-	Service  string
-	Priority int
-}
-
 // Loader.
 type Loader interface {
 	Load(ctx context.Context, sources []Source, serviceNames []string) []LoadResult

@@ -1,10 +1,10 @@
 # conf
 WARNING! just for fun pet-project, not recommend for production use
 
-`conf` simplify loading of application settings from different source. 
+`conf` simplifies loading of application settings from different source. 
 It may be specialized service like consul or etcd or simple json file, cli flags and environment variables.
 
-![linter](https://github.com/hsqds/conf/actions/workflows/golangci.yml/badge.svg)
+![linter](https://github.com/hsqds/conf/actions/workflows/linting.yml/badge.svg)
 ![tests](https://github.com/hsqds/conf/actions/workflows/testing.yml/badge.svg)
 
 ## Table of contents
@@ -22,7 +22,7 @@ While you develop, debug or testing your application, you may need to redeclare 
 Application config represented as a set of services configs provided or used by application. First you need
 to instantiate `conf.Provider` then add some sources like json-file, environment variables of cli flags. 
 When sources added you should `Load` configs you need. `conf.Provider` will try to load services configs
-from each source you've added concurrently. Then you may take service config calling `ServiceConfig` method.
+from each source you've added concurrently. Then you may take service config by calling `ServiceConfig` method.
 You will get service config loaded from most prioritized source.
 
 See [usage example](./examples/alltogether/main.go).

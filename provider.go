@@ -65,6 +65,7 @@ func (p *ConfigProvider) AddSource(src Source) error {
 }
 
 // Load updates inner services config cache.
+// TODO: refactoring
 func (p *ConfigProvider) Load(ctx context.Context, services ...string) (loadErrors []LoadError) {
 	type configPriority struct {
 		cfg Config
@@ -88,7 +89,7 @@ func (p *ConfigProvider) Load(ctx context.Context, services ...string) (loadErro
 		priority = result.Priority
 
 		// TODO: move this logic to []LoadResult
-		// Getting set configs. Each config is most prioritized
+		// Getting configs. Each config is most prioritized
 		// for it's service
 		cfgP, ok := tmpConfigs[result.Service]
 		if !ok || priority > cfgP.prt {
