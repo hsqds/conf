@@ -3,6 +3,8 @@ package conf
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
 )
 
 // Option represents provision options
@@ -14,9 +16,10 @@ type Option struct {
 
 // Provider represents config provider.
 type ConfigProvider struct {
-	sources SourcesStorage
-	configs ConfigsStorage
-	loader  Loader
+	sources            SourcesStorage
+	configs            ConfigsStorage
+	loader             Loader
+	defaultLoadTimeout time.Duration
 }
 
 // NewDefaultConfigProvider.
@@ -32,14 +35,48 @@ func NewDefaultConfigProvider() *ConfigProvider {
 func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStorage,
 	loader Loader) *ConfigProvider {
 	return &ConfigProvider{
-		sources: sourcesStorage,
-		configs: configsStorage,
-		loader:  loader,
+		sources:            sourcesStorage,
+		configs:            configsStorage,
+		loader:             loader,
+		defaultLoadTimeout: time.Second,
 	}
 }
 
 // ServiceConfig provide service config from inner cache.
 func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Config, error) {
+	var (
+		autoload    bool
+		loadTimeout = p.defaultLoadTimeout
+	)
+
+	for _, opt := range opts {
+		switch opt.Name {
+		case "autoload":
+			v, err := strconv.ParseBool(opt.Value)
+			if err != nil {
+				return nil, fmt.Errorf("could not parse option value: %w", err)
+			}
+
+			autoload = v
+		case "loadTimeout":
+			v, err := strconv.Atoi(opt.Value)
+			if err != nil {
+				return nil, fmt.Errorf("could not parse loadTimeout option value: %w", err)
+			}
+
+			loadTimeout = time.Duration(v)
+		default:
+			// TODO: process unknown option name
+		}
+	}
+
+	if !p.configs.Has(serviceName) && autoload {
+		ctx, cancel := context.WithTimeout(context.TODO(), loadTimeout)
+		defer cancel()
+
+		p.Load(ctx, serviceName)
+	}
+
 	cfg, err := p.configs.ByServiceName(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("could not get service config: %w", err)

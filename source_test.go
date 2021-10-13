@@ -54,7 +54,7 @@ func TestSyncedSourcesStorage(t *testing.T) {
 		assert.Nil(t, err)
 
 		err = storage.Append(srcMock)
-		assert.IsType(t, err, conf.SourceUniquenessError{})
+		assert.IsType(t, err, conf.ErrSourceIsNotUnique{})
 	})
 
 	t.Run("should return source by id", func(t *testing.T) {
@@ -79,7 +79,7 @@ func TestSyncedSourcesStorage(t *testing.T) {
 		storage := conf.NewSyncedSourcesStorage()
 
 		_, err := storage.ByID(srcID)
-		assert.IsType(t, conf.SourceStorageError{}, err)
+		assert.IsType(t, conf.ErrSourceNotFound{}, err)
 	})
 
 	t.Run("should return sources list", func(t *testing.T) {

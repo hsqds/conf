@@ -2,30 +2,30 @@ package conf
 
 import "fmt"
 
-type ServiceConfigStorageError struct {
+type ErrServiceConfigNotFound struct {
 	ServiceName string
 }
 
 // Error.
-func (e ServiceConfigStorageError) Error() string {
+func (e ErrServiceConfigNotFound) Error() string {
 	return fmt.Sprintf("could not get %q service config from storage", e.ServiceName)
 }
 
-type SourceUniquenessError struct {
+type ErrSourceIsNotUnique struct {
 	SourceID string
 }
 
 // Error.
-func (e SourceUniquenessError) Error() string {
+func (e ErrSourceIsNotUnique) Error() string {
 	return fmt.Sprintf("source id (%q) is not unique in storage", e.SourceID)
 }
 
 //  represents
-type SourceStorageError struct {
+type ErrSourceNotFound struct {
 	SourceID string
 }
 
 // Error.
-func (e SourceStorageError) Error() string {
+func (e ErrSourceNotFound) Error() string {
 	return fmt.Sprintf("source storage has no source %q", e.SourceID)
 }

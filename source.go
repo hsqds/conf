@@ -47,7 +47,7 @@ func (s *SyncedSourcesStorage) Append(src Source) error {
 	srcID := src.ID()
 
 	if _, ok := s.sources[srcID]; ok {
-		return SourceUniquenessError{srcID}
+		return ErrSourceIsNotUnique{srcID}
 	}
 
 	s.sources[srcID] = src
@@ -75,7 +75,7 @@ func (s *SyncedSourcesStorage) ByID(sourceID string) (Source, error) {
 
 	src, ok := s.sources[sourceID]
 	if !ok {
-		return nil, SourceStorageError{sourceID}
+		return nil, ErrSourceNotFound{sourceID}
 	}
 
 	return src, nil
