@@ -8,6 +8,7 @@ import (
 type ConfigsStorage interface {
 	ByServiceName(serviceName string) (Config, error)
 	Set(serviceName string, cfg Config) error
+	Has(serviceName string) bool
 }
 
 // ConfigsStorage represents configs map protected with mutex.
@@ -32,6 +33,16 @@ func (c *SyncedConfigsStorage) Set(serviceName string, cfg Config) error {
 	return nil
 }
 
+// Has checks service config exist
+func (c *SyncedConfigsStorage) Has(serviceName string) bool {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+
+	_, ok := c.configs[serviceName]
+
+	return ok
+}
+
 // Get receives configs by service name.
 func (c *SyncedConfigsStorage) ByServiceName(serviceName string) (Config, error) {
 	c.mtx.Lock()
@@ -39,7 +50,7 @@ func (c *SyncedConfigsStorage) ByServiceName(serviceName string) (Config, error)
 
 	cfg, ok := c.configs[serviceName]
 	if !ok {
-		return nil, ServiceConfigStorageError{serviceName}
+		return nil, ErrServiceConfigNotFound{serviceName}
 	}
 
 	return cfg, nil

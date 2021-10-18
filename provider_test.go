@@ -100,6 +100,7 @@ func TestConfigProvider(t *testing.T) {
 			)
 
 			csMock.EXPECT().ByServiceName(svc1).Return(cfg1, nil).Times(1)
+			csMock.EXPECT().Has(svc1).Return(true).Times(1)
 			rc1, err := prov.ServiceConfig(svc1)
 
 			assert.Nil(t, err)
@@ -119,6 +120,7 @@ func TestConfigProvider(t *testing.T) {
 			)
 
 			csMock.EXPECT().ByServiceName(svc1).Return(nil, errors.New("fail")).Times(1)
+			csMock.EXPECT().Has(svc1).Return(false).Times(1)
 			_, err := prov.ServiceConfig(svc1)
 
 			assert.Error(t, err)

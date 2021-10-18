@@ -11,32 +11,32 @@ import (
 // TestStoragesErrors
 func TestStoragesErrors(t *testing.T) {
 	t.Parallel()
-	t.Run("ServiceConfigStorageError", func(t *testing.T) {
+	t.Run("ErrServiceConfigNotFound", func(t *testing.T) {
 		t.Parallel()
 
 		const svc1 = "serviceName1"
 
-		e := conf.ServiceConfigStorageError{svc1}
+		e := conf.ErrServiceConfigNotFound{svc1}
 
 		assert.Contains(t, e.Error(), svc1)
 	})
 
-	t.Run("SourceUniquenessError", func(t *testing.T) {
+	t.Run("ErrSourceIsNotUnique", func(t *testing.T) {
 		t.Parallel()
 
 		const sourceID = "sourceID1"
 
-		e := conf.SourceUniquenessError{sourceID}
+		e := conf.ErrSourceIsNotUnique{sourceID}
 
 		assert.Contains(t, e.Error(), sourceID)
 	})
 
-	t.Run("SourceStorageError", func(t *testing.T) {
+	t.Run("ErrSourceNotFound", func(t *testing.T) {
 		t.Parallel()
 
 		const sourceID = "sourceID1"
 
-		e := conf.SourceStorageError{sourceID}
+		e := conf.ErrSourceNotFound{sourceID}
 
 		assert.Contains(t, e.Error(), sourceID)
 	})

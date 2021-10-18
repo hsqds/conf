@@ -3,20 +3,15 @@ package conf
 import (
 	"context"
 	"fmt"
+	"time"
 )
-
-// Option represents provision options
-// options may affect subscription and config loading processes.
-type Option struct {
-	Name  string
-	Value string
-}
 
 // Provider represents config provider.
 type ConfigProvider struct {
-	sources SourcesStorage
-	configs ConfigsStorage
-	loader  Loader
+	sources            SourcesStorage
+	configs            ConfigsStorage
+	loader             Loader
+	defaultLoadTimeout time.Duration
 }
 
 // NewDefaultConfigProvider.
@@ -32,14 +27,53 @@ func NewDefaultConfigProvider() *ConfigProvider {
 func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStorage,
 	loader Loader) *ConfigProvider {
 	return &ConfigProvider{
-		sources: sourcesStorage,
-		configs: configsStorage,
-		loader:  loader,
+		sources:            sourcesStorage,
+		configs:            configsStorage,
+		loader:             loader,
+		defaultLoadTimeout: time.Second,
 	}
 }
 
-// ServiceConfig provide service config from inner cache.
-func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Config, error) {
+// scOption ServiceConfig method option
+type scOption func(*scConfig)
+
+// scConfig ServiceConfig method config
+type scConfig struct {
+	autoload    bool
+	loadTimeout time.Duration
+}
+
+// OptAutoload provide ability to enable or disable autoload
+func OptAutoload(enabled bool) scOption {
+	return func(cfg *scConfig) {
+		cfg.autoload = enabled
+	}
+}
+
+// OptLoadTimeout provide ability to set load timeout
+func OptLoadTimeout(timeout time.Duration) scOption {
+	return func(cfg *scConfig) {
+		cfg.loadTimeout = timeout
+	}
+}
+
+// ServiceConfig provide service config
+func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...scOption) (Config, error) {
+	scCfg := scConfig{}
+
+	// default settings
+	opts = append([]scOption{OptLoadTimeout(time.Second), OptAutoload(false)}, opts...)
+	for _, opt := range opts {
+		opt(&scCfg)
+	}
+
+	if !p.configs.Has(serviceName) && scCfg.autoload {
+		ctx, cancel := context.WithTimeout(context.TODO(), scCfg.loadTimeout)
+		defer cancel()
+
+		p.Load(ctx, serviceName)
+	}
+
 	cfg, err := p.configs.ByServiceName(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("could not get service config: %w", err)
@@ -48,10 +82,16 @@ func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Con
 	return cfg, nil
 }
 
-// SubscribeForServiceConfig creates a subscription for service
+// subConfig SubscribeForServiceConfig method config
+type subConfig struct{}
+
+// subOption SubscribeForServiceConfig method option
+type subOption func(*subConfig)
+
+// TODO: SubscribeForServiceConfig creates a subscription for service
 // config updates. Returns channel of Configs.
 func (p *ConfigProvider) SubscribeForServiceConfig(ctx context.Context, serviceName string,
-	opts ...*Option) (chan Config, error) {
+	opts ...subOption) (chan Config, error) {
 	return nil, nil
 }
 
