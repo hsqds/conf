@@ -272,6 +272,20 @@ func (mr *MockConfigStorageMockRecorder) ByServiceName(arg0 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ByServiceName", reflect.TypeOf((*MockConfigStorage)(nil).ByServiceName), arg0)
 }
 
+// Has mocks base method.
+func (m *MockConfigStorage) Has(arg0 string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Has", arg0)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// Has indicates an expected call of Has.
+func (mr *MockConfigStorageMockRecorder) Has(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Has", reflect.TypeOf((*MockConfigStorage)(nil).Has), arg0)
+}
+
 // Set mocks base method.
 func (m *MockConfigStorage) Set(arg0 string, arg1 conf.Config) error {
 	m.ctrl.T.Helper()

@@ -3,16 +3,8 @@ package conf
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 )
-
-// Option represents provision options
-// options may affect subscription and config loading processes.
-type Option struct {
-	Name  string
-	Value string
-}
 
 // Provider represents config provider.
 type ConfigProvider struct {
@@ -42,36 +34,41 @@ func NewConfigProvider(sourcesStorage SourcesStorage, configsStorage ConfigsStor
 	}
 }
 
-// ServiceConfig provide service config from inner cache.
-func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Config, error) {
-	var (
-		autoload    bool
-		loadTimeout = p.defaultLoadTimeout
-	)
+// scOption ServiceConfig method option
+type scOption func(*scConfig)
 
+// scConfig ServiceConfig method config
+type scConfig struct {
+	autoload    bool
+	loadTimeout time.Duration
+}
+
+// OptAutoload provide ability to enable or disable autoload
+func OptAutoload(enabled bool) scOption {
+	return func(cfg *scConfig) {
+		cfg.autoload = enabled
+	}
+}
+
+// OptLoadTimeout provide ability to set load timeout
+func OptLoadTimeout(timeout time.Duration) scOption {
+	return func(cfg *scConfig) {
+		cfg.loadTimeout = timeout
+	}
+}
+
+// ServiceConfig provide service config
+func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...scOption) (Config, error) {
+	scCfg := scConfig{}
+
+	// default settings
+	opts = append([]scOption{OptLoadTimeout(time.Second), OptAutoload(false)}, opts...)
 	for _, opt := range opts {
-		switch opt.Name {
-		case "autoload":
-			v, err := strconv.ParseBool(opt.Value)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse option value: %w", err)
-			}
-
-			autoload = v
-		case "loadTimeout":
-			v, err := strconv.Atoi(opt.Value)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse loadTimeout option value: %w", err)
-			}
-
-			loadTimeout = time.Duration(v)
-		default:
-			// TODO: process unknown option name
-		}
+		opt(&scCfg)
 	}
 
-	if !p.configs.Has(serviceName) && autoload {
-		ctx, cancel := context.WithTimeout(context.TODO(), loadTimeout)
+	if !p.configs.Has(serviceName) && scCfg.autoload {
+		ctx, cancel := context.WithTimeout(context.TODO(), scCfg.loadTimeout)
 		defer cancel()
 
 		p.Load(ctx, serviceName)
@@ -85,10 +82,16 @@ func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...*Option) (Con
 	return cfg, nil
 }
 
-// SubscribeForServiceConfig creates a subscription for service
+// subConfig SubscribeForServiceConfig method config
+type subConfig struct{}
+
+// subOption SubscribeForServiceConfig method option
+type subOption func(*subConfig)
+
+// TODO: SubscribeForServiceConfig creates a subscription for service
 // config updates. Returns channel of Configs.
 func (p *ConfigProvider) SubscribeForServiceConfig(ctx context.Context, serviceName string,
-	opts ...*Option) (chan Config, error) {
+	opts ...subOption) (chan Config, error) {
 	return nil, nil
 }
 
