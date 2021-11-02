@@ -43,15 +43,25 @@ type scConfig struct {
 	loadTimeout time.Duration
 }
 
-// OptAutoload provide ability to enable or disable autoload
+// "Opt" prefix is deprecated, will be removed at v0.3
+// TODO: remove "Opt" prefixed options
 func OptAutoload(enabled bool) scOption {
+	return WithAutoload(enabled)
+}
+
+func OptLoadTimeout(timeout time.Duration) scOption {
+	return WithLoadTimeout(timeout)
+}
+
+// WithAutoload provide ability to enable or disable autoload
+func WithAutoload(enabled bool) scOption {
 	return func(cfg *scConfig) {
 		cfg.autoload = enabled
 	}
 }
 
-// OptLoadTimeout provide ability to set load timeout
-func OptLoadTimeout(timeout time.Duration) scOption {
+// WithLoadTimeout provide ability to set load timeout
+func WithLoadTimeout(timeout time.Duration) scOption {
 	return func(cfg *scConfig) {
 		cfg.loadTimeout = timeout
 	}
@@ -62,7 +72,7 @@ func (p *ConfigProvider) ServiceConfig(serviceName string, opts ...scOption) (Co
 	scCfg := scConfig{}
 
 	// default settings
-	opts = append([]scOption{OptLoadTimeout(time.Second), OptAutoload(false)}, opts...)
+	opts = append([]scOption{WithLoadTimeout(time.Second), WithAutoload(false)}, opts...)
 	for _, opt := range opts {
 		opt(&scCfg)
 	}
