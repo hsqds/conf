@@ -57,7 +57,7 @@ func main() {
 	// now lets add json source
 	// constructor function accept priority and reader
 	// so we need to open config file first
-	jsonFile, err := os.Open("config.json")
+	jsonFile, err := os.Open("./examples/alltogether/config.json")
 	if err != nil {
 		panic(fmt.Errorf("could not open json config file: %w", err))
 	}

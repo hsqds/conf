@@ -65,8 +65,6 @@ go version >= 1.16
 
 ## ROADMAP
 
-- v0.2:
-  - auto loading configs
 - v0.3:
   - optional merge service configs from various sources
   - dotenv source
