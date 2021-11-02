@@ -45,10 +45,13 @@ type scConfig struct {
 
 // "Opt" prefix is deprecated, will be removed at v0.3
 // TODO: remove "Opt" prefixed options
-var (
-	OptAutoload    = WithAutoload
-	OptLoadTimeout = WithLoadTimeout
-)
+func OptAutoload(enabled bool) scOption {
+	return WithAutoload(enabled)
+}
+
+func OptLoadTimeout(timeout time.Duration) scOption {
+	return WithLoadTimeout(timeout)
+}
 
 // WithAutoload provide ability to enable or disable autoload
 func WithAutoload(enabled bool) scOption {
